@@ -74,7 +74,7 @@ comment = do
   return True
   
 
-defCfg = $(embedFile "resources/hssa2.cfg")
+defCfg = $(embedFile "resources/hssa.cfg")
 cfgIO :: IO String
 cfgIO = do return $ B.unpack defCfg
 
