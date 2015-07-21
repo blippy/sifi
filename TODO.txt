@@ -1,0 +1,1 @@
+* create a separate project: sifi (simple finance)
