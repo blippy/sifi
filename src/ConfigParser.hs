@@ -18,12 +18,13 @@ lup pairs key def =
     Nothing -> def
 
 
-
+cfgFileName = "sifi.cfg"
 
 rcFile :: IO String
-rcFile = iops outDir (fileSep ++ cfgFile)
-         where
-           cfgFile = if isLinux then ".hssarc" else "hssa.cfg"
+rcFile = iops outDir (fileSep ++ cfgFileName)
+         --where
+           --cfgFile = if isLinux then ".hssarc" else "sifi.cfg"
+           
 
 
 
@@ -74,7 +75,7 @@ comment = do
   return True
   
 
-defCfg = $(embedFile "resources/hssa.cfg")
+defCfg = $(embedFile "resources/sifi.cfg")
 cfgIO :: IO String
 cfgIO = do return $ B.unpack defCfg
 

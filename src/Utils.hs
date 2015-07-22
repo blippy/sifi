@@ -194,7 +194,7 @@ outDir :: IO String
 outDir =
   case os of
   "linux" -> getEnv "HOME"
-  _ -> iops (getEnv "USERPROFILE") "\\AppData\\Local\\MarkCarter\\hssa"
+  _ -> iops (getEnv "USERPROFILE") "\\AppData\\Local\\MarkCarter\\sifi"
   
   --let (base, d, _, _) = defaultConfig
   --iops base d

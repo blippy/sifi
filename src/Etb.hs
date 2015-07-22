@@ -138,7 +138,7 @@ createSingleReport dtStamp reps = do
   putStrLn consoleStr
 
   let fileStr = unlines $ map rpBody reps
-  f <- outFile "hssa.txt"
+  f <- outFile "sifi.txt"
   writeFile f fileStr
 
   putStrLn "+ OK Finished"

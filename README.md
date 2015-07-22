@@ -2,11 +2,19 @@
 Text-base finance app
 
 
-cabal repl
-:l moan
-:main
-:r
-:main
+Once you have downloaded the sources, you can build the project:
+
+    cabal sandbox init
+    cabal install # install the dependenices
+    cabal build # create the executable: dist/build/sifi/sifi
+
+To play around with the project as a developer:
+
+    cabal repl
+    :l Etb
+    createEtb
+    
+
 
 To rebuild the modules:
 cabal build
@@ -14,4 +22,4 @@ cabal build
 Generate documentation: cabal haddock
 
 
-See hhsarc: you will need to install a runcom (rc) file 
+See sifi.cfg: you will need to install a runcom (rc) file 

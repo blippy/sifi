@@ -22,7 +22,7 @@ compilerOpts argv =
   case getOpt Permute options argv of
     (o,n,[]  ) -> return (o,n)
     (_,_,errs) -> ioError (userError (concat errs ++ usageInfo header options))
-  where header = "Usage: hssa [OPTION...] files..."
+  where header = "Usage: sifi [OPTION...] files..."
 
 
 

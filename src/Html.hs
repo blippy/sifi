@@ -9,9 +9,9 @@ import Data.FileEmbed
 --import Config
 import Utils
 
-htmlDoc = $(embedFile "resources/hssa.htm")
+htmlDoc = $(embedFile "resources/sifi.htm")
 
 saveHtml = do
-  dst <- outFile "hssa.htm"
+  dst <- outFile "sifi.htm"
   let str = unpack htmlDoc -- :: B.ByteString
   writeFile dst str
