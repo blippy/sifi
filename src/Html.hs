@@ -11,6 +11,7 @@ import Utils
 
 htmlDoc = $(embedFile "resources/sifi.htm")
 
+
 saveHtml = do
   dst <- outFile "sifi.htm"
   let str = unpack htmlDoc -- :: B.ByteString
