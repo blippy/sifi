@@ -7,12 +7,13 @@ import System.Environment
 
 --data PrimaryAction = Args | Normal | Snap
 
-data ArgFlag = Args | Epics | Normal | Snap | Web deriving Show
+data ArgFlag = Args | Epics | Init | Normal | Snap | Web deriving Show
 
 options  :: [OptDescr ArgFlag]
 options =
   [ Option ['a'] ["args"]  (NoArg Args)  "show arguments passed in"
   , Option ['e'] ["epics"] (NoArg Epics) "show share price movements for supplied epics"
+  , Option [] ["init"] (NoArg Init) "Soft initialise: create default dirs/files, no overwriting"
   , Option ['s'] ["snap"]  (NoArg Snap)  "show a daily snapshot"
   , Option ['w'] ["web"]   (NoArg Web)   "download, and create accounts"
   ]
@@ -26,7 +27,7 @@ compilerOpts argv =
 
 
 
-args1 = ["-a", "--snap"]
+args1 = ["-a", "--snap", "--init"]
                      
 
 

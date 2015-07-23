@@ -89,7 +89,7 @@ getCfg = do
   input <- cfgIO
   let edict =  parseCfg input
   let dict = case edict of
-        Left x -> error (show x)
+        Left x -> error $ "getCfg bailing: " ++ (show x)
         Right x -> x
   return dict
 

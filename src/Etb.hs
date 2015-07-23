@@ -1,5 +1,8 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Etb where
 
+import Control.Exception (catch, throw)
 --import Control.Monad.IfElse
 --import Data.Either
 import Data.Function (on)
@@ -130,6 +133,12 @@ mkReports  ledger options = do
              
   return reps
 
+noWrite :: IOError -> String -> IO ()
+noWrite e str = do
+  putStrLn str
+  putStrLn "Try: sifi --init"
+  throw e --re-raise the exception
+
 createSingleReport dtStamp reps = do
   --let outStr = unlines $ mapMaybe single  reps
   
@@ -139,7 +148,7 @@ createSingleReport dtStamp reps = do
 
   let fileStr = unlines $ map rpBody reps
   f <- outFile "sifi.txt"
-  writeFile f fileStr
+  writeFile f fileStr `catch` \(e::IOError) -> noWrite e "createSingleReport: sifi.txt: cannot write file"
 
   putStrLn "+ OK Finished"
 
