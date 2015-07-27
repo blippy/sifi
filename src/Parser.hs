@@ -35,13 +35,10 @@ getQuoted str =
   (h, rest)
   where (h, t) = break (\x -> x == '"') (tail str)
         rest = drop 1 t
-        --body =  init all
-        --len = 2 + length body
+
 
 getUnquoted str = (break isSpace str)
---  (len, body)
---  where body = fst (break isSpace str)
---        len = length body
+
 
 lexeme str
   | length nonWhite == 0 = ("", "")
@@ -69,9 +66,8 @@ fileList = do
 
 
 readInputs = do
-  -- let globs = readConf
-  --contents <- mapM readFile fileList
   files <- fileList
+  --print files
   contents <- mapM readFile files
   let allLines = filterInputs contents
   let commands = map foldLine allLines

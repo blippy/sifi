@@ -194,11 +194,9 @@ iops iostr str = do
 outDir :: IO String
 outDir =
   case os of
-  "linux" -> getEnv "HOME"
+  "linux" -> iops (getEnv "HOME") "/.sifi"
   _ -> iops (getEnv "USERPROFILE") "\\AppData\\Local\\MarkCarter\\sifi"
   
-  --let (base, d, _, _) = defaultConfig
-  --iops base d
 
 fileSep = if isLinux then "/" else "\\"
 

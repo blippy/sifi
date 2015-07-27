@@ -1,9 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module ConfigParser where
 
 import Data.ByteString.Char8 as B
+import Control.Exception (catch)
 import Data.FileEmbed
 import Text.ParserCombinators.Parsec
 
@@ -22,9 +24,6 @@ cfgFileName = "sifi.cfg"
 
 rcFile :: IO String
 rcFile = iops outDir (fileSep ++ cfgFileName)
-         --where
-           --cfgFile = if isLinux then ".hssarc" else "sifi.cfg"
-           
 
 
 
@@ -79,14 +78,20 @@ defCfg = $(embedFile "resources/sifi.cfg")
 cfgIO :: IO String
 cfgIO = do return $ B.unpack defCfg
 
-              
+-- select Cfg contents
+scc = do
+  fname <- rcFile
+  contents <- (Prelude.readFile fname) `catch` (\(e::IOError) -> cfgIO)
+  return contents
+
 --input = "foo = \"bar * stool\" \r\n# happy \nbaz=smurf\nstuff=\"\""
 parseCfg :: String -> Either ParseError [(String, String)]
 parseCfg input = parse cfgFile "(Error in configuration file)" input
 
 getCfg :: IO [(String, String)]
 getCfg = do 
-  input <- cfgIO
+  --input <- cfgIO
+  input <- scc
   let edict =  parseCfg input
   let dict = case edict of
         Left x -> error $ "getCfg bailing: " ++ (show x)

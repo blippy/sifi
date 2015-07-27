@@ -1,17 +1,11 @@
 module Main where
 
---import qualified Ssah.Snap as MySnap
-
---main :: IO ()
---main = MySnap.snap
 
 import Args
 import Etb (hsnap, mainEtb, webYes, webNo)
 --import Snap (hsnap)
 import Yahoo (yahooEpics)
 import Utils (initDirs)
-
---main = mainEtb
 
 main = do
   (opts, n) <- processCmdArgs

@@ -2,6 +2,7 @@ module Ledger  where
 
 import Control.Monad
 import Data.Either
+import Safe (lastDef)
 
 import Comm
 import Dps
@@ -27,17 +28,9 @@ allSt (StockTrip f s w) = f ++ s ++ w
 data Ledger = Ledger -- FIXME should derive from Records
     {
       ldRecords :: Records
---      comms :: [Comm]
---    , dpss :: [Dps]
---    , etrans :: [Etran]
---    , financials :: [Financial]
---    , ntrans :: [Ntran]
---    , naccs :: [Nacc]
     , start :: Dstamp
     , end :: Dstamp
     , squotes :: StockTrip
---    , returns :: [Return]
---    , xaccs :: [Xacc]
     } deriving Show
 
 comms = rcComms . ldRecords
@@ -77,43 +70,10 @@ trimLedger ledger =
     etrans'' = deriveEtrans (start ledger) comms' etrans'
 
     recs = ldRecords ledger
-    --recs1 = recs { rcComms = (rcComms recs ++ comms') }
-    --recs2 = recs1 { rcEtrans = (rcEtrans recs ++ etrans'') }
-    --recs3 = recs2 { rcNtrans = (rcNtrans recs ++ ntrans') }
     recs' = recs { rcComms = comms', rcEtrans = etrans'', rcNtrans = ntrans' }
 
 
-    --trNtrans = filter (\n -> (ntranDstamp n) <= (end ledger)) $ ntrans ledger
 
-
-
-
-
-
-
-{-
-readLedger' inputs =
-  Ledger { comms = comms
-         , dpss = getDpss inputs
-         , etrans = etrans
-         , financials = getFinancials inputs
-         , ntrans = getNtrans inputs
-         , naccs = getNaccs inputs
-         , start = start
-         , end = end
-         , squotes = quotes
-         , returns = getReturns inputs
-         , xaccs = getXaccs inputs
-         }
-  where
-    comms = getComms inputs
-    etrans = getEtrans inputs
-    (start, end) = last $ getPeriods inputs
-    yahoos = getQuotes inputs 
-    googles = getGoogles inputs
-    synths = synthSQuotes comms etrans
-    quotes = StockTrip (yahoos ++ googles)  synths []
--}
 
 readLedger' :: Records -> Ledger
 readLedger' recs =
@@ -124,11 +84,9 @@ readLedger' recs =
     , squotes = quotes
     }
   where
-    --comms = getComms inputs
-    --etrans = getEtrans inputs
-    (start, end) = last (rcPeriods recs)
-    --yahoos = getQuotes inputs 
-    --googles = getGoogles inputs
+    pers = rcPeriods recs
+    --(start, end) = if null pers then ("0000-00-00", "3000-12-31") else last pers
+    (start, end) = lastDef ("0000-00-00", "3000-12-31") pers
     synths = synthSQuotes (rcComms recs) (rcEtrans recs)
     quotes = StockTrip (rcQuotes recs)  synths []
 

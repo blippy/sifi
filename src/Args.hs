@@ -30,13 +30,6 @@ compilerOpts argv =
 args1 = ["-a", "--snap", "--init"]
                      
 
-
-
-
---processArgs argv = do
---  (o, n, errs) <- compilerOpts argv
-
-
 processCmdArgs = do
   argv <- getArgs
   compilerOpts argv  

@@ -1,1 +1,4 @@
+* On vivo sifi --init sets up files in ~ rather than ~/.sifi
 * On vivo, fix: sifi: ERR: findComm couldn't find Comm with Sym FTAS
+* start: xdg-open, http://stackoverflow.com/questions/17201507/how-to-use-the-start-command-in-a-batch-file
+* hsnap should use the indices from Cooms, rather than making up its own ones

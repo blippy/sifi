@@ -41,7 +41,9 @@ createIndexLine comms sym =
     retStr = fmtRet (profit/startPrice * 100.0)
     text = (fmtName sym) ++ (concatMap fmtVal [startPrice, 0.0, profit,  endPrice]) ++ retStr
     
-createIndices comms =  map (createIndexLine comms) ["FTAS", "FTSE", "FTMC"]
+createIndices comms =
+  --map (createIndexLine comms) ["FTAS", "FTSE", "FTMC"]
+  [createIndexLine comms (cmSym c)  | c <- comms, cmType c == "INDX"]
 
 
 pfHdr     = "FOLIO     VBEFORE       VFLOW     VPROFIT         VTO   VRET"
