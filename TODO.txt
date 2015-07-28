@@ -1,3 +1,2 @@
-* start: xdg-open, http://stackoverflow.com/questions/17201507/how-to-use-the-start-command-in-a-batch-file
 * hsnap should use the indices from Comms, rather than making up its own ones
 * Portfolios automatically knows what to do: it should be configured instead

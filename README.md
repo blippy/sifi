@@ -26,4 +26,4 @@ See sifi.cfg: you will need to install a runcom (rc) file
 
 ## Notes
 
-In order to use the "browse" option on Linux, "xdg-open" need to be installed. sifi does not check for this.
+In order to use the "browse" option on Linux, "firefox" needs to be installed. sifi does not check for this.
