@@ -1,2 +1,2 @@
-* hsnap should use the indices from Comms, rather than making up its own ones
+* remove redundant fields from comm's
 * Portfolios automatically knows what to do: it should be configured instead

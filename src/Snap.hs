@@ -97,4 +97,6 @@ createSnapReport theComms theEtrans fetchedQuotes =
         Just sq -> texy (idx, 0.0, True, 0.0, (sqPrice sq), (sqChg sq), (sqChgpc sq), "")
         Nothing -> idx ++ " not found"
 
-    indexLines = map index ["^FTSE", "^FTAS", "^FTMC"]
+    indices = map cmYepic $ filter (\c -> "INDX" == cmType c) theComms
+    
+    indexLines = map index indices
