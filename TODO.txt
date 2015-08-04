@@ -1,2 +1,1 @@
-* remove redundant fields from comm's
 * Portfolios automatically knows what to do: it should be configured instead

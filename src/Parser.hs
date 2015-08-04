@@ -80,9 +80,15 @@ makeTypes maker match  inputs = map maker $ matchHeads match inputs
 
 
 mkComm :: [[Char]] -> Comm
-mkComm ["comm", sym, fetch, ctype, unit, exch, gepic, yepic, name] = 
+mkComm ["comm", sym, fetch, ctype, unit, yepic, name] = 
+    Comm sym bfetch ctype unit yepic name Nothing Nothing
+    where bfetch = (fetch == "W")
+
+{-
+mkCommXXX ["comm", sym, fetch, ctype, unit, exch, gepic, yepic, name] = 
     Comm sym bfetch ctype unit exch gepic yepic name Nothing Nothing
     where bfetch = (fetch == "W")
+-}
 
 getComms inputs = makeTypes mkComm "comm" inputs
 
@@ -144,7 +150,7 @@ mkFinancial oops =
 getFinancials inputs = makeTypes mkFinancial "fin" inputs
 
 
-
+{-
 mkGoogle :: [String] -> StockQuote
 mkGoogle ["P", dstamp, tstamp, sym, priceStr, unit] =
   StockQuote dstamp tstamp ticker 1.0 priceF 0.0 0.0
@@ -171,7 +177,7 @@ mkGoogle ["P", dstamp, tstamp, sym, priceStr, unit] =
 
 
 getGoogles = makeTypes mkGoogle "P" -- FIXME should this really be here?
-
+-}
 
 -- | alt is the alternative account to use if the transaction is before the start date
 mkNacc :: [String] -> Nacc
@@ -245,19 +251,14 @@ createRecs recs (fields:xs) =
       "fin" -> recs { rcFinancials = (rcFinancials recs ++ [mkFinancial fields]) }
       "nacc" -> recs { rcNaccs = (rcNaccs recs ++ [mkNacc fields]) }
       "ntran" -> recs { rcNtrans = (rcNtrans recs ++ [mkNtran fields]) }
-      "P" -> recs { rcQuotes = (rcQuotes recs ++ [mkGoogle fields]) }
+      -- "P" -> recs { rcQuotes = (rcQuotes recs ++ [mkGoogle fields]) }
       "period" -> recs { rcPeriods = (rcPeriods recs ++ [mkPeriod fields]) }
       "return" -> recs { rcReturns = (rcReturns recs ++ [mkReturn fields]) }
       "xacc" -> recs { rcXaccs = (rcXaccs recs ++ [mkXacc fields]) }
       "yahoo" -> recs { rcQuotes = (rcQuotes recs ++ [mkYahoo fields]) }
       _ -> recs
 
---  where
---    make fn1 fn2 = Just $ fn1 $ fn2 (x:xs)
 
---createRecords recs (x:xs)
-
--- | read and decode inputs
 
 radi = do
   inputs <- readInputs

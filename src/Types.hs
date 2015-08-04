@@ -98,8 +98,8 @@ data Comm = Comm { cmSym :: Sym
                  , cmFetch :: Bool
                  , cmType :: String
                  , cmUnit :: String -- currency as string, e.g. USD P GBP NIL
-                 , cmExch :: String
-                 , cmGepic :: String
+                 --, cmExch :: String
+                 --, cmGepic :: String
                  , cmYepic :: Ticker
                  , cmName :: String
                  , cmStartPrice :: Maybe Double
