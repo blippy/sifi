@@ -131,10 +131,11 @@ data Financial =
 
 data Nacc = Nacc { ncAcc::Acc, ncAlt::Acc, ncDesc::String} deriving Show
 
-data Ntran = Ntran { ntDstamp::Dstamp, ntDr ::Acc, ntCr:: Acc, ntP:: Pennies, ntClear:: String, ntDesc:: String}
-             deriving Show
+data Ntran = Ntran { ntDstamp::Dstamp, ntDr ::Acc, ntCr:: Acc, ntP:: Pennies
+                   , ntClear:: String, ntDesc:: String} deriving Show
 
 
+data Port = Port { prTarget :: Folio, prSources :: [Folio] } deriving Show            
 
 
 data Return = Return { idx::Int
@@ -162,6 +163,7 @@ data Xacc = Xacc { xcTarget :: Acc, xcSources :: [Acc] } deriving Show
 data Record = RecComm Comm | RecDps Dps | RecEtran Etran | RecFinancial Financial
             | RecNacc Nacc | RecNtran Ntran
             | RecPeriod Period
+            | RecPort Port
             | RecQuote StockQuote
             | RecReturn Return | RecXacc Xacc
             deriving (Show)
@@ -174,9 +176,11 @@ data Records = Records {
   , rcNtrans :: [Ntran]
   , rcNaccs :: [Nacc]
   , rcPeriods :: [Period]
+  , rcPorts :: [Port]
   , rcQuotes :: [StockQuote]
   , rcReturns :: [Return]
   , rcXaccs :: [Xacc]
   } deriving Show
 
-records0 = Records  [] [] [] [] [] [] [] [] [] [] --  (take 10 $ repeat [])::Records
+records0 = Records  [] [] [] [] [] [] [] [] [] [] [] --  (take 10 $ repeat [])::Records
+--records0 = Records $ ((take 11 $ repeat [])::Records)

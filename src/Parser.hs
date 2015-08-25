@@ -84,11 +84,6 @@ mkComm ["comm", sym, fetch, ctype, unit, yepic, name] =
     Comm sym bfetch ctype unit yepic name Nothing Nothing
     where bfetch = (fetch == "W")
 
-{-
-mkCommXXX ["comm", sym, fetch, ctype, unit, exch, gepic, yepic, name] = 
-    Comm sym bfetch ctype unit exch gepic yepic name Nothing Nothing
-    where bfetch = (fetch == "W")
--}
 
 getComms inputs = makeTypes mkComm "comm" inputs
 
@@ -129,7 +124,7 @@ mkEtranx fields =
     et = mkEtran fields
 
 
-mkFinancial :: [[Char]] -> Financial
+mkFinancial :: [String] -> Financial
 mkFinancial ["fin", action', param1', param2'] =
   f
   where
@@ -150,34 +145,7 @@ mkFinancial oops =
 getFinancials inputs = makeTypes mkFinancial "fin" inputs
 
 
-{-
-mkGoogle :: [String] -> StockQuote
-mkGoogle ["P", dstamp, tstamp, sym, priceStr, unit] =
-  StockQuote dstamp tstamp ticker 1.0 priceF 0.0 0.0
-  where
-    priceRaw = (asDouble priceStr)
-    rox1 = 1.0
-    (ticker, scale) = case sym of
-      "FTAS"  -> ("^FTAS", 1.0)
-      "FTSE"  -> ("^FTSE", 1.0)
-      "AUG"   -> ("AUG?", rox1)
-      "AUS"   -> ("AUS?", rox1)
-      "AFUSO" -> ("AFUSO?", rox1)
-      "FGF"   -> ("GB0003860789.L", rox1)
-      "FGSS"  -> ("GB00B196XG23.L", rox1)
-      "FSS"   -> ("GB0003875100.L", rox1)
-      "CRC"   -> ("CRC", rox1)
-      "HYH"   -> ("HYH", rox1)
-      "KEYS"  -> ("KEYS", rox1)
-      "SHOS"  -> ("SHOS", rox1)
-      s       -> (s ++ ".L", 1.0)
-    priceF = priceRaw * scale
 
-
-
-
-getGoogles = makeTypes mkGoogle "P" -- FIXME should this really be here?
--}
 
 -- | alt is the alternative account to use if the transaction is before the start date
 mkNacc :: [String] -> Nacc
@@ -193,11 +161,18 @@ mkNtran ["ntran", dstamp, dr, cr, pennies, clear, desc] =
 getNtrans = makeTypes mkNtran "ntran"
 
 
-mkPeriod :: [[Char]] -> Period
+mkPeriod :: [String] -> Period
 mkPeriod ["period", start, end] =
   (start, end)
   
 getPeriods inputs = makeTypes mkPeriod "period" inputs
+
+
+mkPort :: [String] -> Port
+mkPort ("port":target:sources) = Port target sources
+
+getPorts = makeTypes mkPort "port"
+
 
 
 mkYahoo :: [String] -> StockQuote
@@ -251,8 +226,8 @@ createRecs recs (fields:xs) =
       "fin" -> recs { rcFinancials = (rcFinancials recs ++ [mkFinancial fields]) }
       "nacc" -> recs { rcNaccs = (rcNaccs recs ++ [mkNacc fields]) }
       "ntran" -> recs { rcNtrans = (rcNtrans recs ++ [mkNtran fields]) }
-      -- "P" -> recs { rcQuotes = (rcQuotes recs ++ [mkGoogle fields]) }
       "period" -> recs { rcPeriods = (rcPeriods recs ++ [mkPeriod fields]) }
+      "port" -> recs {rcPorts = (rcPorts recs ++ [mkPort fields]) }
       "return" -> recs { rcReturns = (rcReturns recs ++ [mkReturn fields]) }
       "xacc" -> recs { rcXaccs = (rcXaccs recs ++ [mkXacc fields]) }
       "yahoo" -> recs { rcQuotes = (rcQuotes recs ++ [mkYahoo fields]) }
@@ -260,8 +235,8 @@ createRecs recs (fields:xs) =
 
 
 
+
 radi = do
   inputs <- readInputs
   let recs = createRecs records0 inputs
   return recs
-
