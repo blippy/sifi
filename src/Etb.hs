@@ -113,9 +113,10 @@ mkReports  ledger options = do
   let grp = assemblePosts (naccs ledger) posts -- FIXME LOW put into order
   let theXaccs = xaccs ledger
   let etb = assembleEtb theXaccs grp
-  let asxNow = commEndPriceOrDie theComms "FTAS"
+  let asxNow = commEndPriceOrDie theComms "FTAS" -- FIXME generalise
   let createdReturns = createReturns (end ledger) theEtrans asxNow (returns ledger)
   let fetchedQuotes = stWeb $ squotes ledger
+  let thePorts = ports ledger
 
   
   --let mkRep (title, option, lines) = Report title (typep option)  (unlines lines)
@@ -127,7 +128,7 @@ mkReports  ledger options = do
         ("etb",        PrinEtb,     createEtbReport etb) ,
         ("etrans",     PrinEtrans,  createEtranReport theEtrans),
         ("financials", PrinFin,     createFinancials etb (financials ledger)),
-        ("portfolios", PrinPorts,   createPortfolios theEtrans theComms),
+        ("portfolios", PrinPorts,   createPortfolios theEtrans theComms thePorts),
         ("returns",    PrinReturns, createdReturns),
         ("snap",       PrinSnap,    createSnapReport theComms theEtrans fetchedQuotes)]
              

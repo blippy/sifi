@@ -39,6 +39,7 @@ etrans = rcEtrans . ldRecords
 financials = rcFinancials . ldRecords
 ntrans = rcNtrans . ldRecords
 naccs = rcNaccs . ldRecords
+ports = rcPorts . ldRecords
 returns = rcReturns . ldRecords
 xaccs = rcXaccs . ldRecords
 
