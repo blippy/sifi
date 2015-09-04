@@ -8,8 +8,6 @@ import Etran
 import Types
 import Utils
 
--- FIXME there is a lot of redundant code in this module
-
 data Flow = Flow { flName :: String
                  , flFolio :: String
                  , flBefore :: Pennies
@@ -29,13 +27,9 @@ etran2flow e =
        , vflRet = r }
   where
     b = etVbd e
-    --f = etFlow e
     p = etPdp e
-    -- t = etVcd e
     r = (unPennies p) / (unPennies b) * 100.00
 
-
---etrans2flows es = map etran2flow es
 
 pfRet profitDuring valueBefore = (unPennies profitDuring) / (unPennies valueBefore) * 100.00
 
@@ -113,7 +107,6 @@ showPort acc (f:fs, fEnd) =
     acc' = acc ++ (showFlow f) ++ "\n"
   
 
-myPorts = ["hal", "hl", "tdn", "tdi"]
 
 
 fmtName :: String -> String
@@ -122,15 +115,6 @@ fmtName name = printf "%5s" name
 fmtRet :: Double -> String
 fmtRet v = printf "%7.2f" v
 
-getPline :: String -> [Pennies] -> String
-getPline name values =
-  text
-  where
-    [vbefore, _, vprofit, _] = values
-    ret = pfRet vprofit vbefore
-    nameStr = fmtName  name
-    retStr = fmtRet ret
-    text = nameStr ++ (concatMap show values) ++ retStr
 
 
 createIndexLine comms sym =
@@ -154,42 +138,23 @@ pfSpacer1 = "----- ----------- ----------- ----------- ----------- ------"
 pfSpacer2 = "===== =========== =========== =========== =========== ======"
 
 
-pfCalc title subEtrans =
-  getPline title sums
-  where
-    --subset = filter isIn etrans
-    sumField field = countPennies $ map field subEtrans
-    sums = map sumField [etVbd, etFlow, etPdp, etVcd]
-
 
 -- | filter etrans on portfolio name, with sorting
 --feopn :: 
 feopn name cmp etrans =
   sortOnMc (\e -> (etSym e, etDstamp e)) $ filter (\e -> name `cmp` etFolio e) etrans
 
-myFolio = feopn "ut" (/=)
+myFolio = feopn "ut" (/=) -- FIXME not sure it should be here
 
-createEquityPortfolios etrans =
-  [pfHdr, hal, hl, tdn, tdi, pfSpacer1, mine, ut, pfSpacer1, all, pfSpacer2]
-  where
-    pfStd folio = pfCalc folio $ filter (\e -> folio == etFolio e) etrans
-    [hal, hl, tdn, tdi, ut] = map pfStd ["hal", "hl", "tdn", "tdi", "ut"]
-    -- mine = pfCalc "mine" $ filter (\e -> "ut" /= etFolio e) etrans
-    mine = pfCalc "mine" $ myFolio etrans
-    all = pfCalc "total" etrans
 
 
 
 
 createPortfolios :: [Etran] -> [Comm] -> [Port] -> [String]
 createPortfolios etrans comms ports =
-  --old ++ new ++ ports2 -- [show ports1]
   [pfHdr] ++ ports2 ++ (createIndices comms)
   where
-    --old = (createEquityPortfolios etrans) ++ (createIndices comms)
-    --new = map show $ baseFlows etrans
     ports1 = createPorts ports (baseFlows etrans) []
     ports2 = map (showPort "") ports1
-    --(comps, new1) = createPort "mine" myPorts $ baseFlows etrans
 
     
