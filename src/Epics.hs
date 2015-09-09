@@ -13,11 +13,11 @@ import Utils
 data Epic = Epic { sym::Sym, eqty::Double , ucost::Double, uvalue::Double
                  , cost::Pennies, value::Pennies, ret::Double} deriving (Show)
 
-showEpic :: Epic -> String
-showEpic epic =
-  printf fmt s q uc uv c v r
+showEpic :: (Int, Epic) -> String
+showEpic (n, epic) =
+  printf fmt n s q uc uv c v r
   where
-    fmt = "%5s %8.2f %8.2f %8.2f %s %s %6.2f"
+    fmt = "%3d %-5s %8.2f %8.2f %8.2f %s %s %6.2f"
     s = sym epic
     q = eqty epic
     uc = ucost epic
@@ -26,12 +26,12 @@ showEpic epic =
     v = show $ value epic
     r = ret epic
 
-epicHdr = "SYM        QTY    UCOST   UVALUE         COST        VALUE   RET%"  
+epicHdr = "IDX SYM        QTY    UCOST   UVALUE         COST        VALUE   RET%"  
 every e = True
 
 epicSum :: Pennies -> Pennies -> String
 epicSum inCost inValue =
-  printf "%32s %s %s" " " (show inCost) (show inValue)
+  printf "%36s %s %s" " " (show inCost) (show inValue)
 
 
 foldEtrans inQty inCost  ([]) = (inQty, inCost)
@@ -75,7 +75,7 @@ reportOn title comms etrans =
   (fullTableLines, zeroLines)
   where    
     (nonzeros, zeros) = reduceEtrans comms etrans
-    tableLines = map showEpic nonzeros
+    tableLines = map showEpic $ zip [1..] nonzeros
     
     tCost = countPennies $ map cost nonzeros
     tValue = countPennies $ map value nonzeros

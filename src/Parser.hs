@@ -29,8 +29,10 @@ eatWhite (x:xs) = if isSpace x then eatWhite xs else x:xs
 
        
 
-
+-- TODO doesn't parse the empty string
 -- TODO fix bug where this is not a termination by a "
+getQuoted ::String -> (String, String)
+--getQuoted ('"':'"':xs) = ("", xs) -- an empty string
 getQuoted str =
   (h, rest)
   where (h, t) = break (\x -> x == '"') (tail str)
@@ -124,6 +126,7 @@ mkEtranx fields =
     et = mkEtran fields
 
 
+{-
 mkFinancial :: [String] -> Financial
 mkFinancial ["fin", action', param1', param2'] =
   f
@@ -133,16 +136,28 @@ mkFinancial ["fin", action', param1', param2'] =
     f = Financial {action = act, param1 = param1'
                   , param2 = param2' }
 
+
 mkFinancial ["fin", "S"] =
   Financial {action = 'S', param1 = "", param2 = ""}
   
 mkFinancial ["fin", "S", param1'] =
   Financial {action = 'S', param1 = param1', param2 = ""}
-  
+-}
+
+mkFinancial :: [String] -> Financial
+mkFinancial ("fin":action':params') = Financial action' params'
+{-
+  f
+  where
+    --act = if (length action') > 0 then head action' else
+    --        error ("Can't have 0 length action:" ++ action' ++ param1' ++ param2')
+    f = Financial {action = action', params = params'}
+-}
+
 mkFinancial oops =
   error ("Didn't understand financial:" ++ (show oops))
 
-getFinancials inputs = makeTypes mkFinancial "fin" inputs
+getFinancials = makeTypes mkFinancial "fin"
 
 
 

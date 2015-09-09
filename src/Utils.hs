@@ -10,6 +10,7 @@ import Data.Ord
 import Data.Time
 import Data.Time.LocalTime
 import GHC.Float
+--import Safe as S
 import System.Directory
 import System.Environment (getEnv)
 import System.Info (os)

@@ -123,9 +123,10 @@ data Etran = Etran { etDstamp::Dstamp
              deriving Show
 
 data Financial =
-  Financial { action::Char
-            , param1::String
-            , param2::String
+  Financial { action::String
+            , params::[String]
+            --, param1::String
+            --, param2::String
             } deriving (Show)
 
 
