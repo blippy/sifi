@@ -1,1 +1,0 @@
-* getQuoted has empty string

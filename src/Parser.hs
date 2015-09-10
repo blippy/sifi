@@ -17,11 +17,10 @@ filterInputs inputs =
         nonblanks = filter (\x -> length x > 0) all
 
 
+data Pstate = Pstate { psToken::Maybe String, psRest :: String } deriving Show
 
 
 
-
--- FIXME I don't think the parser handles "" correctly (see fin with S "" for example)
 
 eatWhite "" = ""
 eatWhite ('#':xs) = ""
@@ -29,29 +28,65 @@ eatWhite (x:xs) = if isSpace x then eatWhite xs else x:xs
 
        
 
--- TODO doesn't parse the empty string
--- TODO fix bug where this is not a termination by a "
-getQuoted ::String -> (String, String)
---getQuoted ('"':'"':xs) = ("", xs) -- an empty string
+getQuoted :: String -> Pstate
 getQuoted str =
-  (h, rest)
-  where (h, t) = break (\x -> x == '"') (tail str)
-        rest = drop 1 t
+  Pstate (Just h) rest
+  where  (h, t) = break (\x -> x == '"') (tail str)
+         rest = drop 1 t             
+
+-- testing
+pstrs = ["\"hello world\" smurf"
+        , "\"\" smurf"
+        , "\"\""
+        , "\"foo"
+        ]
+
+ptest f = map f pstrs
+tgq = ptest getQuoted
+tlex = ptest lexeme
+tfold = ptest foldLine
 
 
-getUnquoted str = (break isSpace str)
+getUnquoted str =
+  Pstate h' t
+  where
+    (h, t) = break isSpace str
+    h' = if null h then Nothing else Just h
 
 
-lexeme str
+{-
+lexemeXXX str
   | length nonWhite == 0 = ("", "")
   | nonWhite !! 0 == '"' = (getQuoted nonWhite)
   | otherwise = (getUnquoted nonWhite)
   where nonWhite = eatWhite str
+-}
 
+lexeme str
+  | length nonWhite == 0 = Pstate Nothing  ""
+  | nonWhite !! 0 == '"' = (getQuoted nonWhite)
+  | otherwise = (getUnquoted nonWhite)
+  where nonWhite = eatWhite str
+
+
+{-
 foldLine' acc str
   | length lex == 0 = acc
   | otherwise = foldLine' (acc ++ [lex]) rest
   where (lex, rest) = lexeme str
+-}
+
+foldLine' acc str
+  | null rest = acc'
+  | otherwise = foldLine' acc' rest
+  where
+    Pstate token rest = lexeme str
+    acc' = case token of
+      Just token' -> acc ++ [token']
+      Nothing -> acc
+    
+    --(lex, rest) = lexeme str
+
     
 foldLine str = foldLine' [] str
 
