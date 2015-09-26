@@ -9,7 +9,6 @@ import Dps
 import Etran
 import Financial
 import Nacc
---import Ntran
 import Parser
 import Returns
 import Types
@@ -25,7 +24,7 @@ data StockTrip = StockTrip
 allSt:: StockTrip -> [StockQuote]
 allSt (StockTrip f s w) = f ++ s ++ w
                  
-data Ledger = Ledger -- FIXME should derive from Records
+data Ledger = Ledger
     {
       ldRecords :: Records
     , start :: Dstamp
@@ -86,7 +85,6 @@ readLedger' recs =
     }
   where
     pers = rcPeriods recs
-    --(start, end) = if null pers then ("0000-00-00", "3000-12-31") else last pers
     (start, end) = lastDef ("0000-00-00", "3000-12-31") pers
     synths = synthSQuotes (rcComms recs) (rcEtrans recs)
     quotes = StockTrip (rcQuotes recs)  synths []
@@ -103,12 +101,7 @@ ratl' = do
 
 -- | Read and trim ledger
 ratl :: Bool -> IO Ledger
---ratlXXX = liftM trimLedger readLedger -- FIXME NOW do downloading if necessary
 ratl fetch = do
-  --inputs <- readInputs
-
-  --recs <- radi
-  --let ledger1 = readLedger' recs
   ledger1 <- ratl'
   let squotes1 = squotes ledger1
   (errs, quotes) <- fmap partitionEithers $ freshQuotes ledger1 fetch -- FIXME handle errs
