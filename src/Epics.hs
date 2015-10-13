@@ -34,19 +34,14 @@ epicSum inCost inValue =
   printf "%36s %s %s" " " (show inCost) (show inValue)
 
 
-foldEtrans inQty inCost  ([]) = (inQty, inCost)
 
-foldEtrans inQty inCost  (e:es) =
-  foldEtrans newQty newCost es
+deltaEtrans (inQty, inCost) e =
+  (inQty+eQty, inCost |+| incCost)
   where
-    --isBuy = ((qty e) > 0.0)
     eQty = etQty e
-    newQty = inQty + eQty
     incCost = if etIsBuy e -- incremental cost
               then (etAmount e)
               else (scalep inCost (eQty/ inQty))
-    newCost = inCost |+| incCost
-
 
   
     
@@ -57,7 +52,8 @@ processSymGrp comms etrans =
   where
     theSym = etSym $ head etrans
     sortedEtrans = sortOnMc etDstamp etrans
-    (theQty, theCost) =  foldEtrans  0.0 (Pennies 0) sortedEtrans
+    --(theQty, theCost) =  foldEtrans  0.0 (Pennies 0) sortedEtrans
+    (theQty, theCost) = foldl deltaEtrans (0.0, Pennies 0) sortedEtrans
     theUcost = 100.0 * (unPennies theCost) / theQty
     theUvalue = commEndPriceOrDie comms theSym
     theValue = enPennies (0.01 * theQty * theUvalue)

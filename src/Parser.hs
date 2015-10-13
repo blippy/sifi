@@ -54,13 +54,6 @@ getUnquoted str =
     h' = if null h then Nothing else Just h
 
 
-{-
-lexemeXXX str
-  | length nonWhite == 0 = ("", "")
-  | nonWhite !! 0 == '"' = (getQuoted nonWhite)
-  | otherwise = (getUnquoted nonWhite)
-  where nonWhite = eatWhite str
--}
 
 lexeme str
   | length nonWhite == 0 = Pstate Nothing  ""
@@ -69,12 +62,6 @@ lexeme str
   where nonWhite = eatWhite str
 
 
-{-
-foldLine' acc str
-  | length lex == 0 = acc
-  | otherwise = foldLine' (acc ++ [lex]) rest
-  where (lex, rest) = lexeme str
--}
 
 foldLine' acc str
   | null rest = acc'
@@ -161,33 +148,10 @@ mkEtranx fields =
     et = mkEtran fields
 
 
-{-
-mkFinancial :: [String] -> Financial
-mkFinancial ["fin", action', param1', param2'] =
-  f
-  where
-    act = if (length action') > 0 then head action' else
-            error ("Can't have 0 length action:" ++ action' ++ param1' ++ param2')
-    f = Financial {action = act, param1 = param1'
-                  , param2 = param2' }
 
-
-mkFinancial ["fin", "S"] =
-  Financial {action = 'S', param1 = "", param2 = ""}
-  
-mkFinancial ["fin", "S", param1'] =
-  Financial {action = 'S', param1 = param1', param2 = ""}
--}
 
 mkFinancial :: [String] -> Financial
 mkFinancial ("fin":action':params') = Financial action' params'
-{-
-  f
-  where
-    --act = if (length action') > 0 then head action' else
-    --        error ("Can't have 0 length action:" ++ action' ++ param1' ++ param2')
-    f = Financial {action = action', params = params'}
--}
 
 mkFinancial oops =
   error ("Didn't understand financial:" ++ (show oops))
@@ -246,10 +210,11 @@ getYahoos = makeTypes mkYahoo "yahoo"
 
 
 mkReturn :: [String] -> Return
-mkReturn ["return", arg2, arg3, arg4, arg5] =
-  Return { idx = idxInt , dstamp = arg3
-         , mine = (asDouble arg4), asx = (asDouble arg5) }
-  where idxInt = (read arg2)::Int
+mkReturn ["return", arg2, dstamp, arg4, arg5] =
+  Return { rtIdx = idx , rtDstamp = dstamp
+         , rtMine = (asDouble arg4), rtMinepc = 0
+         , rtAsx = (asDouble arg5), rtAsxpc = 0, rtOutpc = 0 }
+  where idx = (read arg2)::Int
 
 getReturns inputs = makeTypes mkReturn "return" inputs
 

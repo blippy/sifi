@@ -9,24 +9,22 @@ import Utils
 
 
 
-
-
-fmtReturn :: Int -> Dstamp -> Double -> Double -> Double -> Double -> Double -> String
-fmtReturn aIdx aDstamp aMine minepc aAsx asxpc out =
-  printf "%3d %11s %6.2f %6.2f %4.0f %6.2f %6.2f" aIdx aDstamp aMine minepc aAsx asxpc out
-
--- final 
-foldReturns :: [String] -> Return -> [Return] -> [String]
-foldReturns acc prev ([]) = acc
-  
-foldReturns acc prev (r:rs) =
-  foldReturns (acc ++ [newReturnStr]) r rs
+fmtReturn :: Return -> String
+fmtReturn ret =
+  printf fmt aIdx aDstamp aMine minepc aAsx asxpc out
   where
-    minepc = gainpc (mine r) (mine prev)
-    asxpc  = gainpc (asx  r) (asx  prev)
-    out    = minepc - asxpc
-    newReturnStr = fmtReturn (idx r) (dstamp r) (mine r) minepc (asx r) asxpc out
+    fmt = "%3d %11s %6.2f %6.2f %4.0f %6.2f %6.2f"
+    Return aIdx aDstamp aMine minepc aAsx asxpc out = ret
 
+
+  
+deltaReturns r prev  =
+  Return (rtIdx r) (rtDstamp r) (rtMine r) minepc (rtAsx r) asxpc out
+  where
+    minepc = gainpc (rtMine r) (rtMine prev)
+    asxpc  = gainpc (rtAsx  r) (rtAsx  prev)
+    out    = minepc - asxpc
+ 
 
 summaryLine :: Double -> Double -> Double -> String
 summaryLine minepa asxpa outpa =
@@ -40,15 +38,18 @@ createReturns ds etrans asxNow returns =
     hdr = "IDX      DSTAMP   MINE  MINE%  ASX   ASX%   OUT%"
     ret0 = head returns
     lastRet = last returns
-    finIdx = 1 + (idx lastRet)
+    finIdx = 1 + (rtIdx lastRet)
     nonUt = filter (\e -> "ut" /= etFolio e) etrans
     mine_g = unPennies $ countPennies $ map etPdp nonUt
     mine_bd = unPennies $ countPennies $ map etVbd nonUt
-    finMine = (mine lastRet) * (mine_g / mine_bd + 1.0)
-    finRet = Return { idx = finIdx, dstamp = ds, mine = finMine, asx = asxNow }
+    finMine = (rtMine lastRet) * (mine_g / mine_bd + 1.0)
+    finRet = Return finIdx ds finMine 0 asxNow 0 0
 
     augReturns = returns ++ [finRet] 
-    createdReturns = foldReturns [] ret0 augReturns
+    --createdReturns = foldReturns [] ret0 augReturns
+    createdReturns1 = accum deltaReturns  ret0 augReturns
+    createdReturns = map fmtReturn createdReturns1
+    
 
     -- summary line
     gpc v =
@@ -59,7 +60,7 @@ createReturns ds etrans asxNow returns =
         power =  v ** inv
         
     minepa = gpc (finMine/100.0)
-    asx0 = asx ret0
+    asx0 = rtAsx ret0
     asxpa  = gpc (asxNow/asx0)
     outpa = gpc (finMine *asx0 / asxNow / 100.0)
     summary = summaryLine minepa asxpa outpa

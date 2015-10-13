@@ -139,10 +139,13 @@ data Ntran = Ntran { ntDstamp::Dstamp, ntDr ::Acc, ntCr:: Acc, ntP:: Pennies
 data Port = Port { prTarget :: Folio, prSources :: [Folio] } deriving Show            
 
 
-data Return = Return { idx::Int
-                     , dstamp::Dstamp
-                     , mine::Double
-                     , asx::Double
+data Return = Return { rtIdx::Int
+                     , rtDstamp::Dstamp
+                     , rtMine::Double
+                     , rtMinepc::Percent
+                     , rtAsx::Double
+                     , rtAsxpc::Percent
+                     , rtOutpc::Percent
                      } deriving (Show)
 
 
