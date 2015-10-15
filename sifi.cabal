@@ -2,7 +2,7 @@
 -- see http://haskell.org/cabal/users-guide/
 
 name:                sifi
-version:             5.0.7.0
+version:             5.0.8.0
 synopsis:            Simple set of accounts using Haskell
 -- description:         
 homepage:            http://www.markcarter.me.uk
@@ -51,6 +51,7 @@ executable sifi
                      , Parser, Portfolio, Post
                      , Returns
                      , Snap
+                     , Types
                      , Yahoo
                      , Utils
   default-language:    Haskell2010
