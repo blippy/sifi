@@ -6,10 +6,11 @@ import Control.Exception (catch, throw)
 --import Control.Monad.IfElse
 --import Data.Either
 import Data.Function (on)
-import Data.List
+import Data.List as L
 import Data.Maybe
 import Data.Ord
 --import Data.Set (fromList)
+import Data.Set as S
 --import Data.String.Utils
 import GHC.Exts
 import System.IO
@@ -46,7 +47,8 @@ augEtb (x:xs) etb = augEtb xs $ sumAccs etb (xcTarget x) (xcSources x)
 
 etbLine :: Post -> Pennies -> String
 etbLine post runningTotal = (showPost post) ++ (show runningTotal)
- 
+
+{-
 printEtbAcc (dr, nacc, posts) = 
   textLines
   where
@@ -58,13 +60,32 @@ printEtbAcc (dr, nacc, posts) =
     accHdr = "Acc: " ++ acc
     body = map2 etbLine posts runningTotals    
     textLines = [accHdr, desc] ++ body ++ [";"]
+-}
 
+printEtbAcc:: [Nacc] -> [Post] -> [String]
+printEtbAcc ns ps =
+  textLines
+  where
+    p1 = head ps
+    dr = postDr $ p1
+    msg = "printEtbAcc couldn't find nacc: '" ++ dr ++ "' in, e.g. " ++ (show p1)
+    theNacc = doOrDie (find (\n -> dr == (ncAcc n)) ns) msg
+    Nacc acc _ desc = theNacc
+    runningTotals = cumPennies $ L.map postPennies ps
+    body = map2 etbLine ps runningTotals
+    textLines = ["Acc: " ++ acc, desc] ++ body ++ [";"]
+
+{-
 --reportAccs :: Foldable t => t ([Char], Maybe Nacc, [Post]) -> [[Char]]
-reportAccs grp =
+reportAccs naccs grp =
   ["ACCS:"] ++ accs ++ ["."]
   where
-    accs = concatMap printEtbAcc grp
-  
+    accs = concatMap (printEtbAcc naccs) grp
+-}
+
+reportAccs naccs grp = concatMap (printEtbAcc naccs) grp
+
+{-    
 assemblePosts :: [Nacc] -> [Post] -> [(Acc, Maybe Nacc, [Post])]
 assemblePosts naccs posts =
   zip3 keys keyedNaccs keyPosts
@@ -73,14 +94,34 @@ assemblePosts naccs posts =
     keys = uniq $ map postDr sPosts
     keyedNaccs = map (\k -> find (\n -> k == (ncAcc n)) naccs) keys
     keyPosts = map (\k -> filter (\p -> k == (postDr  p)) sPosts) keys
-    
+-}
 
-assembleEtb :: [Xacc] -> [(Acc, Maybe Nacc, [Post])] -> [(Acc,  Pennies)]
-assembleEtb xaccs es =
+groupPosts:: [Post] -> [[Post]]
+groupPosts ps =
+  groups
+  where
+    --sPosts = (sortOnMc postDstamp ps)
+    --keys = uniq $ map postDr sPosts
+    keys = reverse $ sort $ S.toList $ S.fromList $ L.map postDr ps
+    --keyedNaccs = map (\k -> find (\n -> k == (ncAcc n)) naccs) keys
+    --keyPosts = map (\k -> filter (\p -> k == (postDr  p)) sPosts) keys
+    f (done, rest) key =
+      (hit2:done, rest')
+      where
+        (hit1, rest') = L.partition (\p -> key == (postDr  p)) rest
+        hit2 = sortOn postDstamp hit1
+        
+    (groups, _) = L.foldl f ([], ps) keys
+
+
+--assembleEtb :: [Xacc] -> [(Acc, Maybe Nacc, [Post])] -> [(Acc,  Pennies)]
+assembleEtb :: [Xacc] -> [[Post]] -> [(Acc, Pennies)]
+assembleEtb xaccs ps =
   augs
   where
-    summate (a, n, posts) = (a, countPennies (map postPennies posts))
-    lup = map summate es
+    --summate (a, n, posts) = (a, countPennies (L.map postPennies posts))
+    summate ps = (postDr $ head ps, countPennies (L.map postPennies ps))
+    lup = L.map summate ps
     augs = augEtb xaccs lup
 
 createEtbReport etb =
@@ -88,8 +129,8 @@ createEtbReport etb =
   where
     sorted = sortOnMc fst etb
     eLine (acc, pennies) = (psr 6 acc) ++ (show pennies)
-    eLines = map eLine sorted
-    total  = countPennies $ map snd sorted
+    eLines = L.map eLine sorted
+    total  = countPennies $ L.map snd sorted
     totalLine = eLine ("TOTAL", total)
 
 
@@ -108,9 +149,9 @@ mkReports :: Ledger -> [Option] -> IO [Report]
 mkReports  ledger options = do
   let theComms = comms ledger
   let theEtrans = etrans ledger
+  let theNaccs = naccs ledger
   let posts = createPostings (ntrans ledger) theEtrans      
-
-  let grp = assemblePosts (naccs ledger) posts -- FIXME LOW put into order
+  let grp = groupPosts posts
   let theXaccs = xaccs ledger
   let etb = assembleEtb theXaccs grp
   let asxNow = commEndPriceOrDie theComms "FTAS" -- FIXME generalise
@@ -120,8 +161,8 @@ mkReports  ledger options = do
 
   
   --let mkRep (title, option, lines) = Report title (typep option)  (unlines lines)
-  let reps = map (mkSection options) [
-        ("accs",       PrinAccs,    reportAccs grp) ,
+  let reps = L.map (mkSection options) [
+        ("accs",       PrinAccs,    reportAccs theNaccs grp) ,
         ("cgt",        PrinCgt,     createCgtReport theEtrans),
         ("dpss",       PrinDpss,    createDpssReport theComms theEtrans (dpss ledger) ), 
         ("epics",      PrinEpics,   reportEpics theComms  theEtrans) ,
@@ -143,11 +184,11 @@ noWrite e str = do
 createSingleReport dtStamp reps = do
   --let outStr = unlines $ mapMaybe single  reps
   
-  let consoleStr = unlines $ map rpBody $ filter rpPrint reps
+  let consoleStr = unlines $ L.map rpBody $ L.filter rpPrint reps
   putStrLn dtStamp
   putStrLn consoleStr
 
-  let fileStr = unlines $ map rpBody reps
+  let fileStr = unlines $ L.map rpBody reps
   f <- outFile "sifi.txt"
   writeFile f fileStr `catch` \(e::IOError) -> noWrite e "createSingleReport: sifi.txt: cannot write file"
 

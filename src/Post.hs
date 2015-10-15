@@ -13,6 +13,7 @@ import Ledger
 import Types
 import Utils
 
+-- FIXME EASY to more conventional form
 data Post = Post Dstamp Acc Acc Pennies Desc deriving (Show)
 
 postTuple (Post dstamp dr cr pennies desc) =
