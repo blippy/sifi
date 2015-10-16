@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell, ScopedTypeVariables #-}
 
 module Etb where
 
@@ -48,25 +48,14 @@ augEtb (x:xs) etb = augEtb xs $ sumAccs etb (xcTarget x) (xcSources x)
 etbLine :: Post -> Pennies -> String
 etbLine post runningTotal = (showPost post) ++ (show runningTotal)
 
-{-
-printEtbAcc (dr, nacc, posts) = 
-  textLines
-  where
-    n = case nacc of -- FIXME LOW Can use an OrDie function
-      Just x -> x
-      Nothing -> error ("Couldn't locate account:" ++ dr)
-    runningTotals = cumPennies $ map postPennies posts
-    Nacc acc  _ desc = n
-    accHdr = "Acc: " ++ acc
-    body = map2 etbLine posts runningTotals    
-    textLines = [accHdr, desc] ++ body ++ [";"]
--}
+
 
 printEtbAcc:: [Nacc] -> [Post] -> [String]
 printEtbAcc ns ps =
   textLines
   where
-    p1 = head ps
+    --p1 = head ps
+    p1 = $(headQ 'ps)
     dr = postDr $ p1
     msg = "printEtbAcc couldn't find nacc: '" ++ dr ++ "' in, e.g. " ++ (show p1)
     theNacc = doOrDie (find (\n -> dr == (ncAcc n)) ns) msg
@@ -75,36 +64,17 @@ printEtbAcc ns ps =
     body = map2 etbLine ps runningTotals
     textLines = ["Acc: " ++ acc, desc] ++ body ++ [";"]
 
-{-
---reportAccs :: Foldable t => t ([Char], Maybe Nacc, [Post]) -> [[Char]]
-reportAccs naccs grp =
-  ["ACCS:"] ++ accs ++ ["."]
-  where
-    accs = concatMap (printEtbAcc naccs) grp
--}
+
 
 reportAccs naccs grp = concatMap (printEtbAcc naccs) grp
 
-{-    
-assemblePosts :: [Nacc] -> [Post] -> [(Acc, Maybe Nacc, [Post])]
-assemblePosts naccs posts =
-  zip3 keys keyedNaccs keyPosts
-  where
-    sPosts = (sortOnMc postDstamp posts)
-    keys = uniq $ map postDr sPosts
-    keyedNaccs = map (\k -> find (\n -> k == (ncAcc n)) naccs) keys
-    keyPosts = map (\k -> filter (\p -> k == (postDr  p)) sPosts) keys
--}
+
 
 groupPosts:: [Post] -> [[Post]]
 groupPosts ps =
   groups
   where
-    --sPosts = (sortOnMc postDstamp ps)
-    --keys = uniq $ map postDr sPosts
     keys = reverse $ sort $ S.toList $ S.fromList $ L.map postDr ps
-    --keyedNaccs = map (\k -> find (\n -> k == (ncAcc n)) naccs) keys
-    --keyPosts = map (\k -> filter (\p -> k == (postDr  p)) sPosts) keys
     f (done, rest) key =
       (hit2:done, rest')
       where
@@ -221,8 +191,6 @@ createEtbDoing  options downloading = do
 
 
 
---createEtbDoing options = return ()
-
 optionSet0 = [PrinAccs,  PrinCgt, PrinDpss, PrinEpics, PrinEtb, PrinEtrans, PrinFin, PrinPorts, PrinReturns]
 optionSet1 = [PrinDpss]
 optionSet2 = [PrinReturns]
@@ -239,3 +207,5 @@ hsnap = createEtbDoing [PrinSnap] webYes
 
 createEtb = createEtbDoing optionSet0 webNo
 mainEtb =  createEtbDoing optionSet0
+
+ceb = createEtb

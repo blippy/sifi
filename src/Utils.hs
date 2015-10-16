@@ -1,4 +1,4 @@
-{-# LANGUAGE DoAndIfThenElse, NoOverloadedStrings, TypeSynonymInstances, GADTs, CPP #-}
+{-# LANGUAGE TemplateHaskell, DoAndIfThenElse, NoOverloadedStrings, TypeSynonymInstances, GADTs, CPP #-}
 
 module Utils  where
 
@@ -10,6 +10,8 @@ import Data.Ord
 import Data.Time
 import Data.Time.LocalTime
 import GHC.Float
+import Language.Haskell.TH
+import Language.Haskell.TH.Syntax
 --import Safe as S
 import System.Directory
 import System.Environment (getEnv)
@@ -236,3 +238,6 @@ initDirs = do
 ones = (1.0::Double)  : ones -- infinited list of 1.0's
 
 upperCase = map toUpper
+
+-- example usage: x = [], v2 = $(headQ 'x)
+headQ xs = [| assert (not (null $(varE xs))) (head $(varE xs)) |]

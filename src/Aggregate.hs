@@ -33,11 +33,7 @@ combineKeys leftKey rightKey lefts rights =
   combine  p lefts rights
   where  p l r = ((leftKey l) == (rightKey r))
 
-{-
--- | As combine, but barfs if there are remaining items
-combineStrict p lefts rights =
-  strictly $ combine p lefts rights
-  -}
+
 strictlyCombineKeys  leftKey rightKey lefts rights =
   strictly $ combineKeys leftKey rightKey lefts rights
   
@@ -49,10 +45,12 @@ testAgg1 = combine (==)  testLefts testRights
 
 testAgg2 = strictly (combine (==) testLefts testRights)
 
+
 -- FIXME groupBy doesn't play well with group keys non-adjacent
 groupByKey keyFunc = groupBy (\x y -> keyFunc x == keyFunc y)
 
 groupOn  keyFunc = groupBy (\x y -> keyFunc x == keyFunc y)
+
 
 nonzero f = not (0.0 == f)
 
