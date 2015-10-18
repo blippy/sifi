@@ -19,8 +19,10 @@ cabal-version:       >=1.10
 
 executable sifi
   main-is:             Main.hs     
-  hs-source-dirs:      src    
+  hs-source-dirs:      src
+  --ghc-options:         -fno-warn-tabs
   build-depends:       base >=4.7 && <4.10
+                     --, array >= 0.5.1 && < 0.6
                      , async >=2.0 && <2.1
                      , bytestring >= 0.9.2.1
                      , containers >= 0.3
@@ -41,6 +43,8 @@ executable sifi
                      --, text >= 0.11
                      , tuple >= 0.3
 
+  --extra-source-files:  Scanner.Lexer.x, Scanner.Grammar.y
+  build-tools:         alex, happy
   other-modules:       Aggregate, Args
                      , Browser
                      , Cgt, Comm
@@ -53,6 +57,7 @@ executable sifi
                      , Nacc
                      , Parser, Portfolio, Post
                      , Returns
+                     --, Scanner.Lexer, Scanner.Grammar
                      , Snap
                      , Types
                      , Yahoo
