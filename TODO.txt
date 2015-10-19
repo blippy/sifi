@@ -1,0 +1,1 @@
+-- FIXME resources should prolly be renames assets, with an extra Assets module introduced
