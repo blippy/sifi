@@ -39,7 +39,7 @@ mkSnapLine (sq, qty) =
     str = printf snapFmt ticker amount chg1 chgpc    
 
 
-
+{-
 -- | False => use cached version, True => download values afresh
 snapDownloading :: [Comm] -> Bool -> Bool -> IO [StockQuote]
 snapDownloading theComms concurrently afresh = do
@@ -53,6 +53,7 @@ snapDownloading theComms concurrently afresh = do
   return fetchedQuotes
   
   --let fetchableComms = filter fetchRequired theComms
+-}
 
 createSnapReport :: Ledger -> [String]
 createSnapReport ledger =

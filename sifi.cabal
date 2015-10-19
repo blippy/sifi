@@ -2,7 +2,7 @@
 -- see http://haskell.org/cabal/users-guide/
 
 name:                sifi
-version:             5.0.11.0
+version:             5.0.12.0
 synopsis:            Simple set of accounts using Haskell
 -- description:         
 homepage:            http://www.markcarter.me.uk
@@ -20,7 +20,11 @@ cabal-version:       >=1.10
 executable sifi
   main-is:             Main.hs     
   hs-source-dirs:      src
-  --ghc-options:         -fno-warn-tabs
+  --ghc-options:         -O2
+  --                     -threaded
+  --                     -fprof-auto
+  --                     "-with-rtsopts=-N -p -s -h -i0.1"
+  --                     -- -fno-warn-tabs for using Alex
   build-depends:       base >=4.7 && <4.10
                      --, array >= 0.5.1 && < 0.6
                      , async >=2.0 && <2.1

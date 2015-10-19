@@ -37,9 +37,16 @@ If you want a repl for development:
     stack ghci
     
 
+# Profiling
+
+https://nikita-volkov.github.io/profiling-cabal-projects/
+http://stackoverflow.com/questions/32123475/profiling-builds-with-stack
+
+stack exec my-exec -- +RTS -p
 
 ## Notes
 
 In order to use the "browse" option on Linux, "firefox" needs to be installed. sifi does not check for this.
 
-See sifi.cfg: you will need to install a runcom (rc) file 
+See sifi.cfg: you will need to install a runcom (rc) file
+

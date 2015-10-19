@@ -94,7 +94,7 @@ reportEpics ledger =
   nonUts ++ nzTab ++ zTab1 ++ subReports
   where
     theEtrans = etrans ledger
-    etransBySym = sortOnMc etSym theEtrans --work around apparent groupBy bug
+    etransBySym = sortOnMc etSym theEtrans --FIXME work around apparent groupBy bug
     theComms = comms ledger
 
     -- FIXME looks like a lot of generalisation required here

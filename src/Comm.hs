@@ -6,7 +6,7 @@ import Data.Maybe
 import Data.String.Utils
 
 --import Config
-import Parser 
+--import  Parser 
 import Types
 import Utils
 import Yahoo
@@ -69,7 +69,8 @@ precacheCommsUsing concurrently comms = do
   --let fname = "/home/mcarter/.ssa/yahoo/" ++ ds ++ ".txt"
   saveStockQuotes fname $rights quotes
   return quotes
- 
+
+{-  
 -- | Download the Comms that apparently require fetching, and store to disk
 precacheComms concurrently = do
   --inputs <- readInputs
@@ -85,6 +86,7 @@ loadPrecachedComms = do
   let commands = map foldLine (lines contents)
   let quotes = getYahoos commands
   return quotes
+-}
 
 rox :: Double -> Comm -> Double
 rox  usd c =

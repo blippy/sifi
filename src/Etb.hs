@@ -30,7 +30,6 @@ import Types
 import Utils
 import Yahoo
 
--- FIXME prolly requires a separate Reports module
 
 data Option = PrinAccs | PrinCgt | PrinDpss | PrinEpics | PrinEtb | PrinEtrans
             | PrinFin | PrinPorts | PrinReturns | PrinSnap deriving (Eq)
@@ -123,7 +122,7 @@ mkReports  ledger options =
     posts = createPostings (ntrans ledger) theEtrans      
     grp = groupPosts posts
     theXaccs = xaccs ledger
-    etb = assembleEtb theXaccs grp -- FIXME should prolly be included in Ledger
+    etb = assembleEtb theXaccs grp 
 
     repTbl =
       [ Rep "accs"       PrinAccs    (reportAccs grp)

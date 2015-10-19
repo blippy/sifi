@@ -109,7 +109,7 @@ mkComm ["comm", sym, fetch, ctype, unit, yepic, name] =
     where bfetch = (fetch == "W")
 
 
-getComms inputs = makeTypes mkComm "comm" inputs
+-- getComms inputs = makeTypes mkComm "comm" inputs
 
 
 mkDps :: [[Char]] -> Dps
@@ -122,7 +122,7 @@ mkDps fields =
         Left msg -> error $ unlines ["mkDps double error conversion", show fields]
         Right v -> v
 
-getDpss = makeTypes mkDps "dps"
+-- getDpss = makeTypes mkDps "dps"
 
 
 mkEtran :: [[Char]] -> Etran
@@ -139,7 +139,7 @@ mkEtran fields =
       qtyD = (getDouble qty "qty") * sgn1
       amountP = enPennies (sgn1 * (getDouble amount "amount"))
 
-getEtrans = makeTypes mkEtran "etran"
+-- getEtrans = makeTypes mkEtran "etran"
 
 mkEtranx :: [String] ->Etran
 mkEtranx fields =
@@ -156,7 +156,7 @@ mkFinancial ("fin":action':params') = Financial action' params'
 mkFinancial oops =
   error ("Didn't understand financial:" ++ (show oops))
 
-getFinancials = makeTypes mkFinancial "fin"
+-- getFinancials = makeTypes mkFinancial "fin"
 
 
 
@@ -165,27 +165,27 @@ getFinancials = makeTypes mkFinancial "fin"
 mkNacc :: [String] -> Nacc
 mkNacc ["nacc", acc, alt, desc] = Nacc acc alt desc 
 
-getNaccs = makeTypes mkNacc "nacc"
+-- getNaccs = makeTypes mkNacc "nacc"
 
 
 mkNtran :: [String] -> Ntran
 mkNtran ["ntran", dstamp, dr, cr, pennies, clear, desc] =
   Ntran dstamp dr cr (asPennies pennies) clear desc
 
-getNtrans = makeTypes mkNtran "ntran"
+-- getNtrans = makeTypes mkNtran "ntran"
 
 
 mkPeriod :: [String] -> Period
 mkPeriod ["period", start, end] =
   (start, end)
   
-getPeriods inputs = makeTypes mkPeriod "period" inputs
+-- getPeriods inputs = makeTypes mkPeriod "period" inputs
 
 
 mkPort :: [String] -> Port
 mkPort ("port":target:sources) = Port target sources
 
-getPorts = makeTypes mkPort "port"
+-- getPorts = makeTypes mkPort "port"
 
 
 
@@ -216,16 +216,16 @@ mkReturn ["return", arg2, dstamp, arg4, arg5] =
          , rtAsx = (asDouble arg5), rtAsxpc = 0, rtOutpc = 0 }
   where idx = (read arg2)::Int
 
-getReturns inputs = makeTypes mkReturn "return" inputs
+-- getReturns inputs = makeTypes mkReturn "return" inputs
 
 
 mkXacc :: [String] -> Xacc
 mkXacc ("xacc":target:sources) = Xacc target sources
 
-getXaccs  = makeTypes mkXacc "xacc"
+-- getXaccs  = makeTypes mkXacc "xacc"
 
 
-
+-- FIXME HIGH use multisets and greatly simplify this
 createRecs :: Records -> [[String]] -> Records
 createRecs recs [] = recs
 createRecs recs ([]:xs) = recs

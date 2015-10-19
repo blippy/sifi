@@ -5,7 +5,7 @@ import Safe
 
 import Args
 import Browser (openBrowser)
-import Etb (hsnap, mainEtb, webYes, webNo)
+import Etb (ceb, hsnap, mainEtb, webYes, webNo)
 --import Snap (hsnap)
 import Yahoo (yahooEpics)
 import Utils (initDirs)
