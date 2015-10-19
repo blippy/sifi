@@ -45,13 +45,13 @@ cerl etran = -- create etran report line
              , f3 qty, show amount, f4 unit]
     text = intercalate " " fields
              
-createEtranReport :: [Etran] -> [String]
-createEtranReport etrans =
+createEtranReport :: Ledger -> [String]
+createEtranReport ledger =
   [hdr] ++ eLines
   where
     --     AFUSO   2010-12-30 T B ut      1707.590     20337.40    1191.0002
     hdr = "SYM     DSTAMP     T W FOLIO        QTY       AMOUNT         UNIT"
-    sortedEtrans = sortOnMc (\e -> (etSym e, etDstamp e)) etrans
+    sortedEtrans = sortOnMc (\e -> (etSym e, etDstamp e)) $ etrans ledger
     eLines = map cerl sortedEtrans
 
 --etComm e = deComm $ fromJust $ etDerived e

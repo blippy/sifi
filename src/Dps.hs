@@ -54,14 +54,14 @@ showDpsCalc dc =
     pc = showPercent $ dcPercent dc
     w = if dcWarn dc then "*" else " "
   
-createDpssReport :: [Comm] -> [Etran] -> [Dps] -> [String]
-createDpssReport comms allEtrans theDpss =
+createDpssReport :: Ledger-> [String]
+createDpssReport ledger =
   [hdr] ++ dLines ++ [tLine, warn]
   where
     --    " APH         1.09    16851.000       183.68      7414.44    2.48 *"
     hdr = " SYM          DPS          QTY          DIV        VALUE     YLD W"
-    (epics, _) = reduceEtrans comms $ myFolio allEtrans
-    calcs = map (calcDps theDpss) epics
+    (epics, _) = reduceEtrans (comms ledger) $ myFolio $ etrans ledger
+    calcs = map (calcDps (dpss ledger)) epics
     dLines = map showDpsCalc calcs
     tDiv = countPennies $ map dcDiv calcs
     tValue = countPennies $ map dcValue calcs

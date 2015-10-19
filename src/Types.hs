@@ -188,3 +188,40 @@ data Records = Records {
 
 records0 = Records  [] [] [] [] [] [] [] [] [] [] [] --  (take 10 $ repeat [])::Records
 --records0 = Records $ ((take 11 $ repeat [])::Records)
+
+
+
+------------------------------------------------------------------------
+-- Ledger records
+
+data StockTrip = StockTrip
+                 { stFile :: [StockQuote] -- from file cache
+                 , stSynth :: [StockQuote] -- synthesised stock quotes
+                 , stWeb :: [StockQuote] -- stock quotes downloaded from web
+                 } deriving Show
+
+allSt:: StockTrip -> [StockQuote]
+allSt (StockTrip f s w) = f ++ s ++ w
+                 
+data Ledger = Ledger
+    {
+      ldRecords :: Records
+    , start :: Dstamp
+    , end :: Dstamp
+    , squotes :: StockTrip
+    } deriving Show
+
+comms = rcComms . ldRecords
+dpss  = rcDpss . ldRecords
+etrans = rcEtrans . ldRecords
+financials = rcFinancials . ldRecords
+ntrans = rcNtrans . ldRecords
+naccs = rcNaccs . ldRecords
+ports = rcPorts . ldRecords
+returns = rcReturns . ldRecords
+xaccs = rcXaccs . ldRecords
+
+ledgerQuotes ledger = allSt $ squotes ledger
+
+
+------------------------------------------------------------------------

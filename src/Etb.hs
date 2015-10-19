@@ -3,22 +3,17 @@
 module Etb where
 
 import Control.Exception (catch, throw)
---import Control.Monad.IfElse
---import Data.Either
-import Data.Function (on)
+-- import Data.Function (on)
 import Data.List as L
 import Data.Maybe
 import Data.Ord
---import Data.Set (fromList)
 import Data.Set as S
---import Data.String.Utils
-import GHC.Exts
+--import GHC.Exts
 import System.IO
 import Text.Printf
 
 import Aggregate
 import Comm
---import Config
 import Dps
 import Epics
 import Etran
@@ -27,7 +22,6 @@ import Html
 import Cgt
 import Ledger
 import Nacc
---import Ntran
 import Portfolio
 import Post
 import Returns
@@ -36,10 +30,13 @@ import Types
 import Utils
 import Yahoo
 
+-- FIXME prolly requires a separate Reports module
 
 data Option = PrinAccs | PrinCgt | PrinDpss | PrinEpics | PrinEtb | PrinEtrans
             | PrinFin | PrinPorts | PrinReturns | PrinSnap deriving (Eq)
 
+
+data Rep = Rep String Option (Ledger -> [String])
 
 augEtb :: [Xacc] -> Etb ->Etb
 augEtb [] etb = etb
@@ -66,7 +63,7 @@ printEtbAcc ns ps =
 
 
 
-reportAccs naccs grp = concatMap (printEtbAcc naccs) grp
+reportAccs grp ledger = concatMap (printEtbAcc $ naccs ledger) grp
 
 
 
@@ -85,7 +82,7 @@ groupPosts ps =
 
 
 --assembleEtb :: [Xacc] -> [(Acc, Maybe Nacc, [Post])] -> [(Acc,  Pennies)]
-assembleEtb :: [Xacc] -> [[Post]] -> [(Acc, Pennies)]
+assembleEtb :: [Xacc] -> [[Post]] -> Etb
 assembleEtb xaccs ps =
   augs
   where
@@ -94,7 +91,8 @@ assembleEtb xaccs ps =
     lup = L.map summate ps
     augs = augEtb xaccs lup
 
-createEtbReport etb =
+createEtbReport:: Etb -> Ledger -> [String]
+createEtbReport etb _ =
   eLines ++  [totalLine]
   where
     sorted = sortOnMc fst etb
@@ -107,49 +105,47 @@ createEtbReport etb =
 data Report = Report { rpTitle :: String, rpPrint :: Bool, rpBody :: String }
 
 
-mkSection:: [Option] -> (String, Option, [String]) -> Report
-mkSection options (title, option, lines) =
+mkSection:: [Option] -> Ledger -> Rep -> Report
+mkSection options ledger rep =
   Report title typep text
   where
+    Rep title option repMaker = rep
+    lines = repMaker ledger
     typep = (option == PrinSnap) && (elem option options)
     text = (upperCase title) ++ ":\n"  ++ (unlines lines) ++ "."
 
 
-mkReports :: Ledger -> [Option] -> IO [Report]
-mkReports  ledger options = do
-  let theComms = comms ledger
-  let theEtrans = etrans ledger
-  let theNaccs = naccs ledger
-  let posts = createPostings (ntrans ledger) theEtrans      
-  let grp = groupPosts posts
-  let theXaccs = xaccs ledger
-  let etb = assembleEtb theXaccs grp
-  let asxNow = commEndPriceOrDie theComms "FTAS" -- FIXME generalise
-  let createdReturns = createReturns (end ledger) theEtrans asxNow (returns ledger)
-  let fetchedQuotes = stWeb $ squotes ledger
-  let thePorts = ports ledger
+mkReports :: Ledger -> [Option] -> [Report]
+mkReports  ledger options = 
+  L.map (mkSection options ledger) repTbl
+  where
+    theEtrans = etrans ledger
+    posts = createPostings (ntrans ledger) theEtrans      
+    grp = groupPosts posts
+    theXaccs = xaccs ledger
+    etb = assembleEtb theXaccs grp -- FIXME should prolly be included in Ledger
 
-  
-  --let mkRep (title, option, lines) = Report title (typep option)  (unlines lines)
-  let reps = L.map (mkSection options) [
-        ("accs",       PrinAccs,    reportAccs theNaccs grp) ,
-        ("cgt",        PrinCgt,     createCgtReport theEtrans),
-        ("dpss",       PrinDpss,    createDpssReport theComms theEtrans (dpss ledger) ), 
-        ("epics",      PrinEpics,   reportEpics theComms  theEtrans) ,
-        ("etb",        PrinEtb,     createEtbReport etb) ,
-        ("etrans",     PrinEtrans,  createEtranReport theEtrans),
-        ("financials", PrinFin,     createFinancials etb (financials ledger)),
-        ("portfolios", PrinPorts,   createPortfolios theEtrans theComms thePorts),
-        ("returns",    PrinReturns, createdReturns),
-        ("snap",       PrinSnap,    createSnapReport theComms theEtrans fetchedQuotes)]
-             
-  return reps
+    repTbl =
+      [ Rep "accs"       PrinAccs    (reportAccs grp)
+      , Rep "cgt"        PrinCgt     createCgtReport
+      , Rep "dpss"       PrinDpss    createDpssReport
+      , Rep "epics"      PrinEpics   reportEpics
+      , Rep "etb"        PrinEtb     (createEtbReport etb)
+      , Rep "etrans"     PrinEtrans  createEtranReport
+      , Rep "financials" PrinFin     (createFinancials etb)
+      , Rep "portfolios" PrinPorts   createPortfolios
+      , Rep "returns"    PrinReturns createReturns
+      , Rep "snap"       PrinSnap    createSnapReport
+      ]
+        
+
 
 noWrite :: IOError -> String -> IO ()
 noWrite e str = do
   putStrLn str
   putStrLn "Try: sifi --init"
   throw e --re-raise the exception
+
 
 createSingleReport dtStamp reps = do
   --let outStr = unlines $ mapMaybe single  reps
@@ -183,7 +179,7 @@ fileReports dtStamp (x:xs) = do
 
 createEtbDoing  options downloading = do
   ledger <- ratl downloading
-  reps <- mkReports ledger options
+  let reps = mkReports ledger options
   dtStamp <- nowStr
   createSingleReport dtStamp reps
   fileReports dtStamp reps

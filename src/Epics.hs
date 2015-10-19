@@ -89,12 +89,17 @@ subEpicsReport comms etrans cmp aFolio =
   subEpicsReportWithTitle aFolio comms etrans cmp aFolio
     
 
-reportEpics comms etrans =
+reportEpics :: Ledger -> [String]
+reportEpics ledger =
   nonUts ++ nzTab ++ zTab1 ++ subReports
   where
-    etransBySym = sortOnMc etSym etrans --work around apparent groupBy bug
-    (nzTab, zTab) = reportOn "ALL" comms etransBySym
+    theEtrans = etrans ledger
+    etransBySym = sortOnMc etSym theEtrans --work around apparent groupBy bug
+    theComms = comms ledger
+
+    -- FIXME looks like a lot of generalisation required here
+    (nzTab, zTab) = reportOn "ALL" theComms etransBySym
     zTab1 = ["EPICS: ZEROS"] ++ zTab ++ [";"]
     folios = ["hal", "hl", "tdi", "tdn", "ut"]
-    (nonUts, _) =  reportOn "NON-UT" comms $ myFolio etrans
-    subReports = concatMap (subEpicsReport comms etransBySym (==)) folios
+    (nonUts, _) =  reportOn "NON-UT" theComms $ myFolio theEtrans
+    subReports = concatMap (subEpicsReport theComms etransBySym (==)) folios

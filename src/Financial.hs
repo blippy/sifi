@@ -57,4 +57,8 @@ createFinancial etb fin =
     p3 = sat ps 2 $ show fin
     p4 = sat ps 3 $ show fin
 
-createFinancials etb userData = map (createFinancial etb) userData
+--createFinancials etb userData = map (createFinancial etb) userData
+
+createFinancials :: Etb -> Ledger -> [String]
+createFinancials etb ledger =
+  map (createFinancial etb) $ financials ledger

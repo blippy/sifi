@@ -35,23 +35,37 @@ deltaReturns r prev  =
 
 
 
-createReturns :: Dstamp -> [Etran] -> Double -> [Return] -> [String]
-createReturns _ _ _ [] = [] -- in case no returns have been specified
-createReturns ds etrans asxNow returns =
-  [hdr] ++ createdReturns ++ [summary]
+createReturns :: Ledger -> [String]
+--createReturns' _  [] = [] -- in case no returns have been specified
+createReturns ledger =
+  if length rets < 2  then [] else outLine
   where
     hdr = "IDX     DSTAMP   MINE  MINE%  ASX   ASX%   OUT%"
-    ret0 = head returns
-    lastRet = last returns
+    rets = returns ledger
+    ret0 = head rets
+    lastRet = last rets
     finIdx = 1 + (rtIdx lastRet)
-    nonUt = filter (\e -> "ut" /= etFolio e) etrans
-    mine_g = unPennies $ countPennies $ map etPdp nonUt
-    mine_bd = unPennies $ countPennies $ map etVbd nonUt
-    finMine = (rtMine lastRet) * (mine_g / mine_bd + 1.0)
-    finRet = Return finIdx ds finMine 0 asxNow 0 0
+    
+    rat = let nonUt = filter (\e -> "ut" /= etFolio e) (etrans ledger) --FIXME generalise
+              cp func = unPennies $ countPennies $ map func nonUt -- FIXME genetralise
+              --mine_g = unPennies $ countPennies $ map etPdp nonUt -- FIXME generalise
+              --mine_bd = unPennies $ countPennies $ map etVbd nonUt    
+          in (cp etPdp) / (cp etVbd) + 1.0
 
-    augReturns = returns ++ [finRet] 
-    createdReturns1 = accum deltaReturns  ret0 augReturns
-    createdReturns = map fmtReturn createdReturns1
+    finMine = (rtMine lastRet) * rat
+    asxNow = commEndPriceOrDie (comms ledger) "FTAS" -- FIXME generalise
+    finRet = Return finIdx (end ledger) finMine 0 asxNow 0 0
+
+    augReturns = rets ++ [finRet] 
+    cr1 = accum deltaReturns  ret0 augReturns
+    cr2 = map fmtReturn cr1
  
     summary = summaryLine $ deltaReturns finRet ret0
+    outLine = [hdr] ++ cr2 ++ [summary]
+
+{-
+createReturns :: Ledger -> [String]
+createReturns ledger =
+  createReturns' ledger (returns ledger)
+-}
+    

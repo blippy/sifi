@@ -150,11 +150,14 @@ myFolio = feopn "ut" (/=) -- FIXME not sure it should be here
 
 
 
-createPortfolios :: [Etran] -> [Comm] -> [Port] -> [String]
-createPortfolios etrans comms ports =
-  [pfHdr] ++ ports2 ++ (createIndices comms)
+createPortfolios :: Ledger -> [String]
+createPortfolios ledger =
+  [pfHdr] ++ ports2 ++ indices
   where
-    ports1 = createPorts ports (baseFlows etrans) []
+    ps = ports ledger
+    ports1 = createPorts ps (baseFlows $ etrans ledger) []
     ports2 = map (showPort "") ports1
+
+    indices = createIndices $ comms ledger
 
     

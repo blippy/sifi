@@ -41,10 +41,11 @@ mkRow e =
     priceStr = printf "%0.5f" price
     
 -- | create the CGT spreadsheet
-createCgtReport etrans =
+createCgtReport:: Ledger -> [String]
+createCgtReport ledger =
   x
   where
-    es1 = filter (isJust  . etComm) etrans
+    es1 = filter (isJust  . etComm) (etrans ledger)
     --es2 = feopn "tdi" (/=) es1 -- completely ignore the ISA
     es2 = filter etTaxable es1
     cs = commSymSold es2

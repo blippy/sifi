@@ -54,11 +54,13 @@ snapDownloading theComms concurrently afresh = do
   
   --let fetchableComms = filter fetchRequired theComms
 
-createSnapReport :: [Comm] -> [Etran] -> [StockQuote] -> [String]
-createSnapReport theComms theEtrans fetchedQuotes =
+createSnapReport :: Ledger -> [String]
+createSnapReport ledger =
   lines2 ++ indexLines
   where
-    sortedEtrans = sortBy (comparing $ etSym) theEtrans
+    theComms = comms ledger
+    fetchedQuotes = stWeb $ squotes ledger
+    sortedEtrans = sortBy (comparing $ etSym) $ etrans ledger
     grpEtrans = groupBy (\x y -> (etSym x) == (etSym y)) sortedEtrans
     agg etrans =
         (sym , qty, want, price, amount, profit, chgpc, oops)
