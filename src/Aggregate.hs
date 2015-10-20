@@ -4,6 +4,8 @@ import Data.List
 
 import Utils
 
+-- for uniq, use nub
+
 
 --combine p (left:[]) rights = partition (p left) rights
 combine' p (left:lefts) rights =
@@ -100,11 +102,12 @@ findOn keyTarg keyList targ alist =
 -- | => Just (10, 20)
 testFindOn1 = findOn snd fst (5, 10) aggL2
 
+{-
 uniq' acc ([])   = acc
 uniq' acc (x:xs) = if (elem x acc) then (uniq' acc xs) else (uniq' (acc ++ [x]) xs)
   
 uniq lst = uniq' [] lst
 
 testUniq = uniq [10, 11, 12, 10, 3]
-
+-}
   

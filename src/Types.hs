@@ -164,6 +164,7 @@ data StockQuote = StockQuote {
 data Xacc = Xacc { xcTarget :: Acc, xcSources :: [Acc] } deriving Show
 
 -- see Parser.hs for reading these items
+
 data Record = RecComm Comm
             | RecDps Dps
             | RecEtran Etran
@@ -176,6 +177,14 @@ data Record = RecComm Comm
             | RecReturn Return
             | RecXacc Xacc
             deriving (Show)
+
+
+{- -- this doesn't work, due to multiple #declarations'
+data Record = Comm | Dps | Etran | Financial | Nacc
+            | Ntran  | Period | Port | StockQuote
+            | Return | Xacc
+            deriving (Show)
+-}
 
 data Records = Records {
   rcComms :: [Comm]
