@@ -27,6 +27,6 @@ showNaccAcc nacc = showAcc $ ncAcc nacc
 
 showNacc :: Nacc -> String
 showNacc nacc =
-  let Nacc acc _ desc = nacc in
+  let Nacc _ acc _ desc = nacc in
   (showAcc acc) ++ " " ++ desc
   --printf "%-6.6s  %s" acc desc

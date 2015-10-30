@@ -100,6 +100,7 @@ reportEpics ledger =
     -- FIXME looks like a lot of generalisation required here
     (nzTab, zTab) = reportOn "ALL" theComms etransBySym
     zTab1 = ["EPICS: ZEROS"] ++ zTab ++ [";"]
-    folios = ["hal", "hl", "tdi", "tdn", "ut"]
+    -- folios = ["hal", "hl", "tdi", "tdn", "ut"]
+    folios = map ncAcc $ filter ncEquity $ naccs ledger
     (nonUts, _) =  reportOn "NON-UT" theComms $ myFolio theEtrans
     subReports = concatMap (subEpicsReport theComms etransBySym (==)) folios

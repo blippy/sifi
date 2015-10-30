@@ -124,6 +124,14 @@ mkDps fields =
 
 -- getDpss = makeTypes mkDps "dps"
 
+mkEacc :: [String] -> Nacc
+mkEacc ["eacc", acc, alt, desc] = Nacc True acc alt desc
+--fields =
+--  n { ncEquity = True }
+--  where
+--    n = mkNacc fields
+
+
 
 mkEtran :: [[Char]] -> Etran
 mkEtran fields =
@@ -163,7 +171,7 @@ mkFinancial oops =
 
 -- | alt is the alternative account to use if the transaction is before the start date
 mkNacc :: [String] -> Nacc
-mkNacc ["nacc", acc, alt, desc] = Nacc acc alt desc 
+mkNacc ["nacc", acc, alt, desc] = Nacc False acc alt desc 
 
 -- getNaccs = makeTypes mkNacc "nacc"
 
@@ -236,6 +244,7 @@ createRecs recs (fields:xs) =
     recs' = case cmd of 
       "comm" -> recs { rcComms = (rcComms recs ++ [mkComm fields]) }
       "dps"  -> recs { rcDpss  = (rcDpss  recs ++ [mkDps fields]) }
+      "eacc" -> recs {rcNaccs = (rcNaccs recs ++ [mkEacc fields]) }
       "etran" -> recs { rcEtrans = (rcEtrans recs ++ [mkEtran fields]) }
       "etranx" -> recs { rcEtrans = (rcEtrans recs ++ [mkEtranx fields]) }
       "fin" -> recs { rcFinancials = (rcFinancials recs ++ [mkFinancial fields]) }
