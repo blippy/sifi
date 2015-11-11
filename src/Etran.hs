@@ -37,10 +37,10 @@ cerl :: Etran -> String
 cerl etran = -- create etran report line
   text
   where
-    Etran dstamp taxable way acc sym qty amount _ _ = etran
+    Etran dstamp taxable isBuy acc sym qty amount _ _ = etran
     taxStr = if taxable then "T" else "-"
     unit = 100.0 * (unPennies amount) / qty
-    wayStr = if qty > 0.0 then "B" else "S" -- FIXME use isBuy rather than qty > 0.0
+    wayStr = if isBuy then "B" else "S"
     fields = [psr 7 sym, dstamp, taxStr, wayStr, psr 3 acc
              , f3 qty, show amount, f4 unit]
     text = intercalate " " fields
@@ -54,8 +54,7 @@ createEtranReport ledger =
     sortedEtrans = sortOnMc (\e -> (etSym e, etDstamp e)) $ etrans ledger
     eLines = map cerl sortedEtrans
 
---etComm e = deComm $ fromJust $ etDerived e
---etDuring e = deDuring $ fromJust $ etDerived e
+
 
 -- | Profit during period
 etPdp e = (etVcd e) |-| (if etBetween e then  (etAmount e) else (etVbd e))
