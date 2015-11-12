@@ -1,4 +1,4 @@
-module Aggregate where
+module Aggregate (groupOn) where
 
 import Data.List
 
@@ -6,7 +6,7 @@ import Utils
 
 -- for uniq, use nub
 
-
+{-
 --combine p (left:[]) rights = partition (p left) rights
 combine' p (left:lefts) rights =
   ins:right
@@ -18,7 +18,9 @@ combine' p (left:lefts) rights =
 combine p lefts rights =
   (init c, last c)
   where c = combine' p lefts rights
+-}
 
+{-
 showFailures outs = 
   error msg
   where
@@ -27,10 +29,10 @@ showFailures outs =
       
 strictly (ins, outs) =
   if (length outs) == 0 then ins else showFailures outs
-
+-}
                                       
  
-
+{-
 combineKeys leftKey rightKey lefts rights =
   combine  p lefts rights
   where  p l r = ((leftKey l) == (rightKey r))
@@ -46,7 +48,7 @@ testAgg1 = combine (==)  testLefts testRights
 -- ([[],[11,11,11],[12,12]],[5])
 
 testAgg2 = strictly (combine (==) testLefts testRights)
-
+-}
 
 -- FIXME groupBy doesn't play well with group keys non-adjacent
 groupByKey keyFunc = groupBy (\x y -> keyFunc x == keyFunc y)
@@ -54,6 +56,7 @@ groupByKey keyFunc = groupBy (\x y -> keyFunc x == keyFunc y)
 groupOn  keyFunc = groupBy (\x y -> keyFunc x == keyFunc y)
 
 
+{-
 nonzero f = not (0.0 == f)
 
 finding p lst =
@@ -65,16 +68,10 @@ finding p lst =
 
 testFinding = finding (== 10) [12, 13, 10, 14, 10, 15]
 -- => (Just 10,[12,13,14,10,15])
-
+-}
 
 -- I suspect there is a weird bug remaining
 {-
-collate p  (l:[]) rs =
-  [(Just l, hit)] ++ misses
-  where
-    (hit, miss) = finding (p l) rs
-    misses = map (\m -> (Nothing, Just m))  miss
--}
 
 collate _ ([]) rs = map (\m -> (Nothing, Just m))  rs
 
@@ -101,13 +98,4 @@ findOn keyTarg keyList targ alist =
 
 -- | => Just (10, 20)
 testFindOn1 = findOn snd fst (5, 10) aggL2
-
-{-
-uniq' acc ([])   = acc
-uniq' acc (x:xs) = if (elem x acc) then (uniq' acc xs) else (uniq' (acc ++ [x]) xs)
-  
-uniq lst = uniq' [] lst
-
-testUniq = uniq [10, 11, 12, 10, 3]
 -}
-  

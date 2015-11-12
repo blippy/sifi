@@ -1,9 +1,10 @@
 module Epics where
 
 import Data.List
+import GHC.Exts
 import Text.Printf
 
-import Aggregate
+--import Aggregate
 import Comm
 import Etran
 import Portfolio
@@ -63,7 +64,8 @@ processSymGrp comms etrans =
 reduceEtrans comms etrans =
   (nonzeros, zeros)
   where
-    symGrp = groupByKey etSym etrans
+    --symGrp = groupByKey etSym etrans
+    symGrp = groupWith etSym etrans
     epics = map (processSymGrp comms) symGrp
     (nonzeros, zeros) = partition (\e -> (eqty e) > 0.0) epics
                         

@@ -3,9 +3,10 @@ module Post where
 import Data.List
 import Data.Maybe
 import Data.Ord
+import GHC.Exts
 import Text.Printf
 
-import Aggregate
+--import Aggregate
 import Etran
 import Ledger
 import Types
@@ -79,6 +80,7 @@ aggPosts posts =
   res
   where
     accOrder = sortBy (comparing $ postDr) posts
-    grp = groupOn postDr accOrder
+    --grp = groupOn postDr accOrder
+    grp = groupWith postDr accOrder
     sortSubGroup = sortOnMc postDstamp -- (comparing $ postDstamp)
     res = map sortSubGroup grp
