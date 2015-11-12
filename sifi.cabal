@@ -2,7 +2,7 @@
 -- see http://haskell.org/cabal/users-guide/
 
 name:                sifi
-version:             5.0.12.0
+version:             5.0.13.0
 synopsis:            Simple set of accounts using Haskell
 -- description:         
 homepage:            http://www.markcarter.me.uk
@@ -50,7 +50,7 @@ executable sifi
 
   --extra-source-files:  Scanner.Lexer.x, Scanner.Grammar.y
   --build-tools:         alex, happy
-  other-modules:       Aggregate, Args
+  other-modules:       Args
                      , Browser
                      , Cgt, Comm
                      , ConfigParser
