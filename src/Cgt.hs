@@ -4,29 +4,12 @@ module Cgt where
 import Data.List
 import Data.List.Split
 import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
+import GHC.Exts
 import Text.Printf
 
 import Comm
---import Config
 import Etran
-import Portfolio
 import Types
-import Utils
-
-
-commSymSold :: [Etran] -> [Sym]
-commSymSold es =
-  cs4
-  where
-    -- identify the comms which have sales during the period
-    --es2 = filter isJust . etDerived es1
-    es3 = filter etBetween $ filter etIsSell es -- sells during period
-    cs1 = map (cmSym . fromJust . etComm) es3
-    cs2 = Set.fromList cs1 -- to remove dupes
-    cs3 = Set.toList cs2
-    cs4 = sort cs3
 
 
 mkRow e =
@@ -41,18 +24,22 @@ mkRow e =
     priceStr = printf "%0.5f" price
     
 -- | create the CGT spreadsheet
-createCgtReport:: Ledger -> [String]
+createCgtReport:: Ledger -> [String] -- FIXME surely must be simplifiable?
 createCgtReport ledger =
   x
   where
     es1 = filter (isJust  . etComm) (etrans ledger)
     es2 = filter etTaxable es1
-    cs = commSymSold es2
+
+    -- find the comms which have sales during the period
+    --cs = commSymSold es2
+    cs = nub $ sort $ map (cmSym . fromJust . etComm) $ filter etBetween $ filter etIsSell es2
 
     -- find those etrans which have comms that have sales
     es3 = filter (\e -> elem (cmSym $ fromJust $ etComm e) cs) es2
 
-    es4 = sortOnMc (\e -> (etSym e, etDstamp e)) es3
+    --es4 = sortOnMc (\e -> (etSym e, etDstamp e)) es3
+    es4 = sortWith (\e -> (etSym e, etDstamp e)) es3
     eRows = map mkRow es4
     x = eRows
 

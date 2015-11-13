@@ -138,9 +138,12 @@ testlod2 = lookupOrDie 34 [(30, 31), (32, 33)] "you shall not pass"
 true x = True -- function which always returns true
 
 
+
+-- FIXME replace with GHC.Exts.sortWith
 sortOnMc :: Ord b => (a -> b) -> [a] -> [a]
 sortOnMc f =
   map snd . sortBy (comparing fst) . map (\x -> let y = f x in y `seq` (y, x))
+
 
 -----------------------------------------------------------------------
 -- printing routines
