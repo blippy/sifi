@@ -118,8 +118,8 @@ data Etran = Etran { etDstamp::Dstamp
                    , etSym::Sym
                    , etQty::Qty
                    , etAmount::Pennies
-                   , etDuring :: Maybe Bool
-                   , etComm :: Maybe Comm }
+                   , etDuring ::  Bool
+                   , etComm ::  Comm }
              deriving Show
 
 data Financial =

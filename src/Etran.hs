@@ -11,9 +11,10 @@ import Utils
 
 etIsSell = not . etIsBuy
 
+{-
 etBetween :: Etran -> Bool
 etBetween e = fromMaybe False (etDuring e)
-
+-}
 
 
 
@@ -25,7 +26,7 @@ qtys es = sum $ map etQty es
 
 
 deriveEtran start comms e =
-  e { etDuring = Just during, etComm = Just theComm }
+  e { etDuring = during, etComm = theComm }
   where
     during = start <= etDstamp e
     theComm = findComm comms (etSym e)
@@ -57,29 +58,34 @@ createEtranReport ledger =
 
 
 -- | Profit during period
-etPdp e = (etVcd e) |-| (if etBetween e then  (etAmount e) else (etVbd e))
+etPdp e = (etVcd e) |-| (if etDuring e then  (etAmount e) else (etVbd e))
 
-etStartPrice e = fromJust $ cmStartPrice $ fromJust $ etComm e
+etStartPrice e = fromJust $ cmStartPrice $ etComm e
 
 -- | value brought down
 etVbd e =
+  {-
   case etDuring e of
   Just True -> Pennies 0
   Just False -> enPennies  (etStartPrice e * 0.01 * etQty e)
   Nothing -> error ("etVbd failure with:" ++ (show e))
-  --if etDuring e then Pennies 0 else enPennies  (etStartPrice e * 0.01 * etQty e)
+-}
+  if etDuring e then Pennies 0 else enPennies  (etStartPrice e * 0.01 * etQty e)
 
-etEndPrice e = fromJust $ cmEndPrice $ fromJust $ etComm e
+etEndPrice e = fromJust $ cmEndPrice $ etComm e
 
 -- | value carried down
 etVcd e = enPennies (etEndPrice e * 0.01 * etQty e)
 
 -- | profit brought down
-etPbd e = case etDuring e of
+etPbd e =
+  {-
+  case etDuring e of
   Just True -> Pennies 0
   Just False -> (etVbd e) |-| (etAmount e)
   Nothing -> error ("etPdb failure with:" ++ (show e))
-  --if etDuring e then Pennies 0 else (etVbd e) |-| (etAmount e)
+-}
+  if etDuring e then Pennies 0 else (etVbd e) |-| (etAmount e)
 
 -- | flow during period
 etFlow e = (etVcd e) |-| (etVbd e) |-| (etPdp e)

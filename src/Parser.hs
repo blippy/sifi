@@ -105,7 +105,7 @@ makeTypes maker match  inputs = map maker $ matchHeads match inputs
 
 mkComm :: [[Char]] -> Comm
 mkComm ["comm", sym, fetch, ctype, unit, yepic, name] = 
-    Comm sym bfetch ctype unit yepic name Nothing Nothing
+    Comm sym bfetch ctype unit yepic name undefined undefined
     where bfetch = (fetch == "W")
 
 
@@ -135,7 +135,7 @@ mkEacc ["eacc", acc, alt, desc] = Nacc True acc alt desc
 
 mkEtran :: [[Char]] -> Etran
 mkEtran fields =
-    Etran dstamp True etIsBuy folio sym qtyD amountP Nothing Nothing
+    Etran dstamp True etIsBuy folio sym qtyD amountP undefined undefined
     where
       [_, dstamp, way, folio, sym, qty, amount] = fields
       getDouble field name = --FIXME this should be abstracted (e.g. also in Yahoo.hs)

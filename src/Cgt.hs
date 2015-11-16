@@ -28,15 +28,17 @@ createCgtReport:: Ledger -> [String] -- FIXME surely must be simplifiable?
 createCgtReport ledger =
   x
   where
-    es1 = filter (isJust  . etComm) (etrans ledger)
-    es2 = filter etTaxable es1
+    --es1 = filter (isJust  . etComm) (etrans ledger)
+    --es2 = filter etTaxable es1   
+    es2 = filter etTaxable $  etrans ledger
+    commSym = cmSym . etComm -- the symbol of a commodity
 
     -- find the comms which have sales during the period
     --cs = commSymSold es2
-    cs = nub $ sort $ map (cmSym . fromJust . etComm) $ filter etBetween $ filter etIsSell es2
+    cs = nub $ sort $ map commSym  $ filter (\e -> (etDuring e) && (etIsSell e)) es2
 
     -- find those etrans which have comms that have sales
-    es3 = filter (\e -> elem (cmSym $ fromJust $ etComm e) cs) es2
+    es3 = filter (\e -> elem (commSym e) cs) es2
 
     --es4 = sortOnMc (\e -> (etSym e, etDstamp e)) es3
     es4 = sortWith (\e -> (etSym e, etDstamp e)) es3

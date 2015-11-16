@@ -45,7 +45,7 @@ postingsFromEtran e =
 
     pPbd2 = Post ds "opn" "pdb2" (negp $ etPbd e) ("pdb2:" ++ s) -- profit b/d
 
-    posts = if etBetween e then posts1 else pPbd2:posts1
+    posts = if etDuring e then posts1 else pPbd2:posts1
     
 
 
