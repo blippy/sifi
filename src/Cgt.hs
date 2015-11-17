@@ -24,24 +24,20 @@ mkRow e =
     priceStr = printf "%0.5f" price
     
 -- | create the CGT spreadsheet
-createCgtReport:: Ledger -> [String] -- FIXME surely must be simplifiable?
+createCgtReport:: Ledger -> [String]
 createCgtReport ledger =
-  x
+  map mkRow es2
   where
-    --es1 = filter (isJust  . etComm) (etrans ledger)
-    --es2 = filter etTaxable es1   
-    es2 = filter etTaxable $  etrans ledger
-    commSym = cmSym . etComm -- the symbol of a commodity
+    esTax = filter etTaxable $  etrans ledger
 
     -- find the comms which have sales during the period
-    --cs = commSymSold es2
-    cs = nub $ sort $ map commSym  $ filter (\e -> (etDuring e) && (etIsSell e)) es2
+    commSym = cmSym . etComm -- the symbol of a commodity
+    cs = nub $ sort $ map commSym  $ filter (\e -> (etDuring e) && (etIsSell e)) esTax
 
     -- find those etrans which have comms that have sales
-    es3 = filter (\e -> elem (commSym e) cs) es2
+    es1 = filter (\e -> elem (commSym e) cs) esTax
 
-    --es4 = sortOnMc (\e -> (etSym e, etDstamp e)) es3
-    es4 = sortWith (\e -> (etSym e, etDstamp e)) es3
-    eRows = map mkRow es4
-    x = eRows
+    es2 = sortWith (\e -> (etSym e, etDstamp e)) es1
+
+
 
