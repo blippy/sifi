@@ -10,6 +10,7 @@ import Etb (ceb, hsnap, mainEtb, webYes, webNo)
 import Yahoo (yahooEpics)
 import Utils (initDirs)
 
+{-
 noop = putStr ""
 
 main = do
@@ -25,3 +26,14 @@ main = do
     Web -> mainEtb webYes
 
   if Browse `elem` opts then openBrowser else noop
+-}
+
+main = do
+  opts <- processCmdArgs
+  case (_optMainAction opts) of
+    Init -> initDirs
+    Normal -> mainEtb webNo
+    ShowArgs -> print opts
+    Snap -> hsnap
+    Web -> mainEtb webYes
+    Yahoo -> yahooEpics (optOtherArgs opts)
