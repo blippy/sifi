@@ -64,12 +64,12 @@ options  :: [OptDescr (Options -> Options)]
 options =
   [ Option ['a'] ["args"]  (setMainAction ShowArgs) "show arguments passed in"
   --, Option ['b'] ["browse"] (NoArg Browse) "open graphical browser"
+  , Option [] ["end"] (ReqArg (\s opts -> opts { optEnd = Just s}) "END") "set the end of the period in form YYYY-MM-DD"
   , Option ['e'] ["epics"] (setMainAction Yahoo) "show share price movements for supplied epics"
-    
   , Option [] ["init"] (setMainAction Init) "Soft initialise: create default dirs/files, no overwriting"
   , Option ['n'] ["normal"] (setMainAction Normal) "Normal operation"
   , Option ['s'] ["snap"]  (setMainAction Snap)  "show a daily snapshot"
-  , Option [] ["start"] (ReqArg (\s opts -> opts { optStart = Just s}) "START") "set the start of period in form YYY-MM-DD"
+  , Option [] ["start"] (ReqArg (\s opts -> opts { optStart = Just s}) "START") "set the start of period in form YYYY-MM-DD"
   , Option ['w'] ["web"]   (setMainAction Web)   "download, and create accounts"
 
   ]

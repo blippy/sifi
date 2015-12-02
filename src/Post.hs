@@ -8,7 +8,7 @@ import Text.Printf
 
 --import Aggregate
 import Etran
-import Ledger
+--import Ledger
 import Types
 import Utils
 
@@ -51,13 +51,13 @@ postingsFromEtran e =
 
 postingsFromEtrans etrans = concatMap postingsFromEtran etrans
 
-
+{-
 testPostings = do
   ledger <- ratl False
   let es = etrans ledger      
   let ps = postingsFromEtrans es
   printAll ps
-
+-}
 
 createPostings :: [Ntran] -> [Etran] -> [Post]
 createPostings ntrans derivedEtrans =

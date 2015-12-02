@@ -4,6 +4,7 @@ import Control.Monad
 import Data.Either
 import Safe (lastDef)
 
+import Args
 import Comm
 import Dps
 import Etran
@@ -47,8 +48,8 @@ trimLedger ledger =
 
 
 
-readLedger' :: Records -> Ledger
-readLedger' recs =
+readLedger' :: Records -> Options -> Ledger
+readLedger' recs opts =
   Ledger {
     ldRecords = recs
     , start = start
@@ -57,7 +58,16 @@ readLedger' recs =
     }
   where
     pers = rcPeriods recs
-    (start, end) = lastDef ("0000-00-00", "3000-12-31") pers
+    
+    (defStart, defEnd) = lastDef ("0000-00-00", "3000-12-31") pers
+    -- FIXME following could be written as one-liners
+    start = case (optStart opts) of
+      Just x -> x
+      Nothing -> defStart
+    end = case (optEnd opts) of
+      Just x -> x
+      Nothing -> defEnd
+      
     synths = synthSQuotes (rcComms recs) (rcEtrans recs)
     quotes = StockTrip (rcQuotes recs)  synths []
 
@@ -67,14 +77,16 @@ freshQuotes ledger downloading =
   if downloading then precacheCommsUsing True (comms ledger) else return ([])
 
 
-ratl' = do
+ratl' cmdOptions = do
+  --print (optEnd cmdOptions) -- FIXME remove
   recs <- radi
-  return $ readLedger' recs
+  return $ readLedger' recs cmdOptions
 
 -- | Read and trim ledger
-ratl :: Bool -> IO Ledger
-ratl fetch = do
-  ledger1 <- ratl'
+ratl :: Bool -> Options -> IO Ledger
+ratl fetch cmdOptions = do
+  --print (optEnd cmdOptions) -- FIXME remove
+  ledger1 <- ratl' cmdOptions
   let squotes1 = squotes ledger1
   (errs, quotes) <- fmap partitionEithers $ freshQuotes ledger1 fetch -- FIXME handle errs
   let squotes2 = squotes1 { stWeb = quotes }
@@ -83,7 +95,7 @@ ratl fetch = do
   let ledger3 = trimLedger ledger2
   return ledger3
 
-ratlf = ratl False
+ratlf = ratl False defaultOptions
 
 etranToSQuote :: [Comm] -> Etran -> StockQuote
 etranToSQuote comms e =

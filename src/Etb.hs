@@ -13,6 +13,7 @@ import System.IO
 import Text.Printf
 
 --import Aggregate
+import Args
 import Comm
 import Dps
 import Epics
@@ -176,8 +177,8 @@ fileReports dtStamp (x:xs) = do
 
 
 
-createEtbDoing  options downloading = do
-  ledger <- ratl downloading
+createEtbDoing  options downloading cmdOptions = do
+  ledger <- ratl downloading cmdOptions
   let reps = mkReports ledger options
   dtStamp <- nowStr
   createSingleReport dtStamp reps
@@ -198,9 +199,9 @@ createCgt = createSection PrinCgt
 webYes = True
 webNo = False
 
-hsnap = createEtbDoing [PrinSnap] webYes
+hsnap = createEtbDoing [PrinSnap] webYes defaultOptions
 
 createEtb = createEtbDoing optionSet0 webNo
 mainEtb =  createEtbDoing optionSet0
 
-ceb = createEtb
+ceb = createEtb defaultOptions

@@ -32,8 +32,8 @@ main = do
   opts <- processCmdArgs
   case (_optMainAction opts) of
     Init -> initDirs
-    Normal -> mainEtb webNo
+    Normal -> mainEtb webNo opts
     ShowArgs -> print opts
     Snap -> hsnap
-    Web -> mainEtb webYes
+    Web -> mainEtb webYes opts -- FXIME Web can be combined into Normal using an option
     Yahoo -> yahooEpics (optOtherArgs opts)
