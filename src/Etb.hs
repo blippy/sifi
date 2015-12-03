@@ -177,8 +177,8 @@ fileReports dtStamp (x:xs) = do
 
 
 
-createEtbDoing  options downloading cmdOptions = do
-  ledger <- ratl downloading cmdOptions
+createEtbDoing  options cmdOptions = do
+  ledger <- ratl cmdOptions
   let reps = mkReports ledger options
   dtStamp <- nowStr
   createSingleReport dtStamp reps
@@ -196,12 +196,9 @@ createSection opt = createEtbDoing [opt] -- e.g. createSection PrinReturns
 
 createCgt = createSection PrinCgt
 
-webYes = True
-webNo = False
+hsnap = createEtbDoing [PrinSnap]  (defaultOptions {_optFetch = True})
 
-hsnap = createEtbDoing [PrinSnap] webYes defaultOptions
-
-createEtb = createEtbDoing optionSet0 webNo
+createEtb = createEtbDoing optionSet0
 mainEtb =  createEtbDoing optionSet0
 
 ceb = createEtb defaultOptions

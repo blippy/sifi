@@ -83,19 +83,19 @@ ratl' cmdOptions = do
   return $ readLedger' recs cmdOptions
 
 -- | Read and trim ledger
-ratl :: Bool -> Options -> IO Ledger
-ratl fetch cmdOptions = do
+ratl :: Options -> IO Ledger
+ratl cmdOptions = do
   --print (optEnd cmdOptions) -- FIXME remove
   ledger1 <- ratl' cmdOptions
   let squotes1 = squotes ledger1
-  (errs, quotes) <- fmap partitionEithers $ freshQuotes ledger1 fetch -- FIXME handle errs
+  (errs, quotes) <- fmap partitionEithers $ freshQuotes ledger1 (_optFetch cmdOptions) -- FIXME handle errs
   let squotes2 = squotes1 { stWeb = quotes }
   let ledger2 = ledger1 { squotes = squotes2 }
   
   let ledger3 = trimLedger ledger2
   return ledger3
 
-ratlf = ratl False defaultOptions
+ratlf = ratl defaultOptions
 
 etranToSQuote :: [Comm] -> Etran -> StockQuote
 etranToSQuote comms e =
