@@ -1,12 +1,16 @@
 module Main where
 
---import qualified Ledger as Ledger
 import Ledger
 
 {-
 import Args
 import Browser (openBrowser)
+<<<<<<< HEAD:cli/Main.hs
 import Etb (ceb, hsnap, mainEtb, webYes, webNo)
+=======
+import Etb (ceb, hsnap, mainEtb)
+--import Snap (hsnap)
+>>>>>>> master:src/Main.hs
 import Yahoo (yahooEpics)
 import Utils (initDirs)
 
@@ -15,10 +19,10 @@ main = do
   opts <- processCmdArgs
   case (_optMainAction opts) of
     Init -> initDirs
-    Normal -> mainEtb webNo opts
+    Normal -> mainEtb opts
     ShowArgs -> print opts
     Snap -> hsnap
-    Web -> mainEtb webYes opts -- FXIME Web can be combined into Normal using an option
+    Web -> mainEtb opts
     Yahoo -> yahooEpics (optOtherArgs opts)
 -}
 
