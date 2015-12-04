@@ -2,15 +2,11 @@ module Main where
 
 import Ledger
 
-{-
+
 import Args
-import Browser (openBrowser)
-<<<<<<< HEAD:cli/Main.hs
-import Etb (ceb, hsnap, mainEtb, webYes, webNo)
-=======
+--import Browser (openBrowser)
 import Etb (ceb, hsnap, mainEtb)
 --import Snap (hsnap)
->>>>>>> master:src/Main.hs
 import Yahoo (yahooEpics)
 import Utils (initDirs)
 
@@ -24,7 +20,3 @@ main = do
     Snap -> hsnap
     Web -> mainEtb opts
     Yahoo -> yahooEpics (optOtherArgs opts)
--}
-
-main = do
-  print "hello"
