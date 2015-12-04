@@ -2,7 +2,7 @@
 -- see http://haskell.org/cabal/users-guide/
 
 name:                sifi
-version:             5.1.0.0
+version:             6.0.0.0
 synopsis:            Simple set of accounts using Haskell
 -- description:         
 homepage:            http://www.markcarter.me.uk
@@ -16,10 +16,9 @@ build-type:          Simple
 -- extra-source-files:  
 cabal-version:       >=1.10
 
-
-executable sifi
-  main-is:             Main.hs     
+library
   hs-source-dirs:      src
+  exposed-modules:     Ledger
   --ghc-options:         -O2
   --                     -threaded
   --                     -fprof-auto
@@ -58,8 +57,9 @@ executable sifi
                      , Dps
                      , Epics, Etb, Etran
                      , Financial
+                     , Foo
                      , Html
-                     , Ledger
+                     --, Ledger
                      , Nacc
                      , Parser, Portfolio, Post
                      , Returns
@@ -70,7 +70,17 @@ executable sifi
                      , Utils
   default-language:    Haskell2010
 
+--library
+--  hs-source-dirs:      fake
+--  exposed-modules:     Fake.Foo
 
+executable sifi
+  hs-source-dirs:      cli
+  main-is:             Main.hs
+  --other-modules:       Ledger
+  build-depends:       base >= 4.7 && < 4.10
+                     , sifi
 
+  default-language:    Haskell2010
 
 
