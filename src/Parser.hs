@@ -1,16 +1,18 @@
-module Parser (radi, foldLine, getYahoos) where
+module Parser (radi, tokeFile, tokeFiles) where
+--module Parser where
 
 import Control.Monad
---import Control.Monad.IO.Class
 import Data.Char
 import Data.Maybe
 import System.Directory
 import System.Path.Glob
 
 import ConfigParser
+import Lexer
 import Types
 import Utils hiding (spaces)
 
+{-
 filterInputs inputs =
   filter (\x -> isAlpha (x !! 0)) nonblanks
   where all = (lines . unlines) inputs
@@ -34,17 +36,6 @@ getQuoted str =
   where  (h, t) = break (\x -> x == '"') (tail str)
          rest = drop 1 t             
 
--- testing
-pstrs = ["\"hello world\" smurf"
-        , "\"\" smurf"
-        , "\"\""
-        , "\"foo"
-        ]
-
-ptest f = map f pstrs
-tgq = ptest getQuoted
-tlex = ptest lexeme
-tfold = ptest foldLine
 
 
 getUnquoted str =
@@ -72,10 +63,10 @@ foldLine' acc str
       Just token' -> acc ++ [token']
       Nothing -> acc
     
-    --(lex, rest) = lexeme str
-
-    
+ 
+foldLine :: String -> [String]    
 foldLine str = foldLine' [] str
+-}
 
 
 fileList :: IO [String]
@@ -89,12 +80,33 @@ fileList = do
   return h
 
 
+
+
+-- FIXME prolly belongs in Lexer.x
+tokeFile :: FilePath -> IO [[String]]
+tokeFile fname = do
+  contents <- readFile fname
+  return $ map alexScanTokens $ lines contents
+
+-- FIXME prolly belongs in Lexer.x
+tokeFiles :: [FilePath] -> IO [[String]]
+tokeFiles fnames = do
+  a <- mapM tokeFile fnames
+  return $ concat a
+  
+
+--tokeFiles fnames = (mapM tokeFile fnames) >>= concat
+  
+readInputs :: IO [[String]]
 readInputs = do
-  files <- fileList
+  files <- fileList :: IO [String]
   --print files
-  contents <- mapM readFile files
-  let allLines = filterInputs contents
-  let commands = map foldLine allLines
+  --contents <- mapM readFile files
+  --let allLines = filterInputs contents
+  --let commands = map foldLine allLines
+  --contents <- filesContents
+  tokes <- tokeFiles files
+  let commands = filter (not. null)  tokes
   return commands
 
 
@@ -109,8 +121,6 @@ mkComm ["comm", sym, fetch, ctype, unit, yepic, name] =
     where bfetch = (fetch == "W")
 
 
--- getComms inputs = makeTypes mkComm "comm" inputs
-
 
 mkDps :: [[Char]] -> Dps
 mkDps fields =
@@ -122,14 +132,9 @@ mkDps fields =
         Left msg -> error $ unlines ["mkDps double error conversion", show fields]
         Right v -> v
 
--- getDpss = makeTypes mkDps "dps"
 
 mkEacc :: [String] -> Nacc
 mkEacc ["eacc", acc, alt, desc] = Nacc True acc alt desc
---fields =
---  n { ncEquity = True }
---  where
---    n = mkNacc fields
 
 
 
@@ -164,37 +169,26 @@ mkFinancial ("fin":action':params') = Financial action' params'
 mkFinancial oops =
   error ("Didn't understand financial:" ++ (show oops))
 
--- getFinancials = makeTypes mkFinancial "fin"
-
-
 
 
 -- | alt is the alternative account to use if the transaction is before the start date
 mkNacc :: [String] -> Nacc
 mkNacc ["nacc", acc, alt, desc] = Nacc False acc alt desc 
 
--- getNaccs = makeTypes mkNacc "nacc"
 
 
 mkNtran :: [String] -> Ntran
 mkNtran ["ntran", dstamp, dr, cr, pennies, clear, desc] =
   Ntran dstamp dr cr (asPennies pennies) clear desc
 
--- getNtrans = makeTypes mkNtran "ntran"
-
 
 mkPeriod :: [String] -> Period
 mkPeriod ["period", start, end] =
   (start, end)
   
--- getPeriods inputs = makeTypes mkPeriod "period" inputs
-
 
 mkPort :: [String] -> Port
 mkPort ("port":target:sources) = Port target sources
-
--- getPorts = makeTypes mkPort "port"
-
 
 
 mkYahoo :: [String] -> StockQuote
@@ -224,13 +218,10 @@ mkReturn ["return", arg2, dstamp, arg4, arg5] =
          , rtAsx = (asDouble arg5), rtAsxpc = 0, rtOutpc = 0 }
   where idx = (read arg2)::Int
 
--- getReturns inputs = makeTypes mkReturn "return" inputs
-
 
 mkXacc :: [String] -> Xacc
 mkXacc ("xacc":target:sources) = Xacc target sources
 
--- getXaccs  = makeTypes mkXacc "xacc"
 
 
 -- FIXME HIGH use multisets and greatly simplify this

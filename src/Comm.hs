@@ -5,8 +5,6 @@ import Data.List
 import Data.Maybe
 import Data.String.Utils
 
---import Config
---import  Parser 
 import Types
 import Utils
 import Yahoo
@@ -51,7 +49,6 @@ commStartPriceOrDie comms sym =
   where
     comm = findComm comms sym
   
--- commEndPrice comm = sel2 $ commDerived comm
 
 commEndPriceOrDie comms sym =
   doOrDie (cmEndPrice comm) ("Can't find end price for:" ++ sym)
@@ -70,23 +67,6 @@ precacheCommsUsing concurrently comms = do
   saveStockQuotes fname $rights quotes
   return quotes
 
-{-  
--- | Download the Comms that apparently require fetching, and store to disk
-precacheComms concurrently = do
-  --inputs <- readInputs
-  --let comms = makeTypes mkComm "comm" inputs
-  inputs <- radi
-  let comms = rcComms inputs
-  cache <- precacheCommsUsing concurrently comms
-  return cache
-
-loadPrecachedComms = do
-  yf <- yfile
-  contents <- readFile yf
-  let commands = map foldLine (lines contents)
-  let quotes = getYahoos commands
-  return quotes
--}
 
 rox :: Double -> Comm -> Double
 rox  usd c =
@@ -105,6 +85,5 @@ fetchCommQuotes concurrently comms = do
   let hitComms = filter cmFetch comms
   let tickers = map cmYepic hitComms
   usd <- fetchUsd
-  -- let usd = 1.5
   let roxs = map (rox usd) hitComms
   fetchQuotesA concurrently tickers roxs
