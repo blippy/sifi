@@ -1,5 +1,8 @@
 module Main where
 
+import Data.Version (showVersion)
+import Paths_sifi (version)
+
 import Ledger
 
 
@@ -12,6 +15,7 @@ import Utils (initDirs)
 
 
 main = do
+  putStrLn $ "sifi " ++ (showVersion version)
   opts <- processCmdArgs
   case (_optMainAction opts) of
     Init -> initDirs

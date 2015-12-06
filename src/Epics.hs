@@ -52,7 +52,7 @@ processSymGrp comms etrans =
 
   where
     theSym = etSym $ head etrans
-    sortedEtrans = sortOnMc etDstamp etrans
+    sortedEtrans = sortWith etDstamp etrans
     --(theQty, theCost) =  foldEtrans  0.0 (Pennies 0) sortedEtrans
     (theQty, theCost) = foldl deltaEtrans (0.0, Pennies 0) sortedEtrans
     theUcost = 100.0 * (unPennies theCost) / theQty
@@ -96,7 +96,7 @@ reportEpics ledger =
   nonUts ++ nzTab ++ zTab1 ++ subReports
   where
     theEtrans = etrans ledger
-    etransBySym = sortOnMc etSym theEtrans --FIXME work around apparent groupBy bug
+    etransBySym = sortWith etSym theEtrans --FIXME work around apparent groupBy bug
     theComms = comms ledger
 
     -- FIXME looks like a lot of generalisation required here

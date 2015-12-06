@@ -3,6 +3,7 @@ module Etran where
 import Data.List
 import Data.Maybe
 --import Data.Tuple.Select
+import GHC.Exts
 
 import Comm
 import Types
@@ -10,15 +11,6 @@ import Utils
 
 
 etIsSell = not . etIsBuy
-
-{-
-etBetween :: Etran -> Bool
-etBetween e = fromMaybe False (etDuring e)
--}
-
-
-
-
 
 qtys :: [Etran] -> Double
 qtys es = sum $ map etQty es
@@ -30,7 +22,6 @@ deriveEtran start comms e =
   where
     during = start <= etDstamp e
     theComm = findComm comms (etSym e)
-    --de = Just $ EtranDerived during theComm
 
 deriveEtrans start comms etrans = map (deriveEtran start comms) etrans
 
@@ -52,7 +43,7 @@ createEtranReport ledger =
   where
     --     AFUSO   2010-12-30 T B ut      1707.590     20337.40    1191.0002
     hdr = "SYM     DSTAMP     T W FOLIO        QTY       AMOUNT         UNIT"
-    sortedEtrans = sortOnMc (\e -> (etSym e, etDstamp e)) $ etrans ledger
+    sortedEtrans = sortWith (\e -> (etSym e, etDstamp e)) $ etrans ledger
     eLines = map cerl sortedEtrans
 
 
@@ -64,12 +55,6 @@ etStartPrice e = fromJust $ cmStartPrice $ etComm e
 
 -- | value brought down
 etVbd e =
-  {-
-  case etDuring e of
-  Just True -> Pennies 0
-  Just False -> enPennies  (etStartPrice e * 0.01 * etQty e)
-  Nothing -> error ("etVbd failure with:" ++ (show e))
--}
   if etDuring e then Pennies 0 else enPennies  (etStartPrice e * 0.01 * etQty e)
 
 etEndPrice e = fromJust $ cmEndPrice $ etComm e
@@ -79,12 +64,6 @@ etVcd e = enPennies (etEndPrice e * 0.01 * etQty e)
 
 -- | profit brought down
 etPbd e =
-  {-
-  case etDuring e of
-  Just True -> Pennies 0
-  Just False -> (etVbd e) |-| (etAmount e)
-  Nothing -> error ("etPdb failure with:" ++ (show e))
--}
   if etDuring e then Pennies 0 else (etVbd e) |-| (etAmount e)
 
 -- | flow during period

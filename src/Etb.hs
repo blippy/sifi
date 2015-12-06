@@ -8,7 +8,9 @@ import Data.List as L
 import Data.Maybe
 import Data.Ord
 import Data.Set as S
---import GHC.Exts
+import Data.Version (showVersion)
+import GHC.Exts
+import Paths_sifi (version)
 import System.IO
 import Text.Printf
 
@@ -31,6 +33,9 @@ import Types
 import Utils
 import Yahoo
 
+--sifiVersion = version
+--printVersion :: IO ()
+--printVersion = print version
 
 data Option = PrinAccs | PrinCgt | PrinDpss | PrinEpics | PrinEtb | PrinEtrans
             | PrinFin | PrinPorts | PrinReturns | PrinSnap deriving (Eq)
@@ -95,7 +100,7 @@ createEtbReport:: Etb -> Ledger -> [String]
 createEtbReport etb _ =
   eLines ++  [totalLine]
   where
-    sorted = sortOnMc fst etb
+    sorted = sortWith fst etb
     eLine (acc, pennies) = (psr 6 acc) ++ (show pennies)
     eLines = L.map eLine sorted
     total  = countPennies $ L.map snd sorted

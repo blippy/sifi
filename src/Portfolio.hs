@@ -1,6 +1,7 @@
 module Portfolio where
 
 import Data.List
+import GHC.Exts
 import Text.Printf
 
 import Comm
@@ -142,7 +143,7 @@ pfSpacer2 = "===== =========== =========== =========== =========== ======"
 -- | filter etrans on portfolio name, with sorting
 --feopn :: 
 feopn name cmp etrans =
-  sortOnMc (\e -> (etSym e, etDstamp e)) $ filter (\e -> name `cmp` etFolio e) etrans
+  sortWith (\e -> (etSym e, etDstamp e)) $ filter (\e -> name `cmp` etFolio e) etrans
 
 myFolio = feopn "ut" (/=) -- FIXME not sure it should be here
 
