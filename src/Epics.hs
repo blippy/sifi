@@ -18,21 +18,21 @@ showEpic :: (Int, Epic) -> String
 showEpic (n, epic) =
   printf fmt n s q uc uv c v r
   where
-    fmt = "%3d %-5s %8.2f %8.2f %8.2f %s %s %6.2f"
+    fmt = "%03d %-5s %8.2f %8.2f %8.2f %12.2f %12.2f %8.2f"
     s = sym epic
     q = eqty epic
     uc = ucost epic
     uv = uvalue epic
-    c = show $ cost epic
-    v = show $ value epic
+    c = (unPennies $ cost epic) -- / 100.0
+    v = unPennies $ value epic
     r = ret epic
 
-epicHdr = "IDX SYM        QTY    UCOST   UVALUE         COST        VALUE   RET%"  
+epicHdr = "IDX SYM        QTY    UCOST   UVALUE         COST        VALUE     RET%"  
 every e = True
 
 epicSum :: Pennies -> Pennies -> String
 epicSum inCost inValue =
-  printf "%36s %s %s" " " (show inCost) (show inValue)
+  printf "0%35s %s %s" " " (show inCost) (show inValue)
 
 
 

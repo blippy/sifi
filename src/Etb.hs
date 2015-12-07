@@ -34,8 +34,8 @@ import Utils
 import Yahoo
 
 --sifiVersion = version
---printVersion :: IO ()
---printVersion = print version
+printVersion :: IO ()
+printVersion = print version
 
 data Option = PrinAccs | PrinCgt | PrinDpss | PrinEpics | PrinEtb | PrinEtrans
             | PrinFin | PrinPorts | PrinReturns | PrinSnap deriving (Eq)
