@@ -226,13 +226,14 @@ outFile name = iops outDir (fileSep ++ name)
 
 yahooGlobs:: IO String
 yahooGlobs = outFile $ "yahoo" ++ fileSep ++  "*.txt"
-  
-initDirs = do
-  tDir <- outFile "text"
-  createDirectoryIfMissing True tDir
-  yDir <- outFile "yahoo"
-  createDirectoryIfMissing True yDir
-  
+
+-- |Create dir in standard location if missing
+cdis :: String -> IO ()
+cdis dir = outFile dir >>= createDirectoryIfMissing True
+
+initDirs :: IO ()
+initDirs = mapM_  cdis [ "db", "text", "yahoo" ]
+
 -----------------------------------------------------------------------
 -- Misc routines
 
