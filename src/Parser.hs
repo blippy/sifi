@@ -4,69 +4,17 @@ module Parser (radi, tokeFile, tokeFiles) where
 import Control.Monad
 import Data.Char
 import Data.Maybe
+import Prelude as P
+import Data.Sequence as S
 import System.Directory
 import System.Path.Glob
 
 import ConfigParser
 import Lexer
+import ListUtils
 import Types
 import Utils hiding (spaces)
 
-{-
-filterInputs inputs =
-  filter (\x -> isAlpha (x !! 0)) nonblanks
-  where all = (lines . unlines) inputs
-        nonblanks = filter (\x -> length x > 0) all
-
-
-data Pstate = Pstate { psToken::Maybe String, psRest :: String } deriving Show
-
-
-
-
-eatWhite "" = ""
-eatWhite ('#':xs) = ""
-eatWhite (x:xs) = if isSpace x then eatWhite xs else x:xs
-
-       
-
-getQuoted :: String -> Pstate
-getQuoted str =
-  Pstate (Just h) rest
-  where  (h, t) = break (\x -> x == '"') (tail str)
-         rest = drop 1 t             
-
-
-
-getUnquoted str =
-  Pstate h' t
-  where
-    (h, t) = break isSpace str
-    h' = if null h then Nothing else Just h
-
-
-
-lexeme str
-  | length nonWhite == 0 = Pstate Nothing  ""
-  | nonWhite !! 0 == '"' = (getQuoted nonWhite)
-  | otherwise = (getUnquoted nonWhite)
-  where nonWhite = eatWhite str
-
-
-
-foldLine' acc str
-  | null rest = acc'
-  | otherwise = foldLine' acc' rest
-  where
-    Pstate token rest = lexeme str
-    acc' = case token of
-      Just token' -> acc ++ [token']
-      Nothing -> acc
-    
- 
-foldLine :: String -> [String]    
-foldLine str = foldLine' [] str
--}
 
 
 fileList :: IO [String]
@@ -100,17 +48,12 @@ tokeFiles fnames = do
 readInputs :: IO [[String]]
 readInputs = do
   files <- fileList :: IO [String]
-  --print files
-  --contents <- mapM readFile files
-  --let allLines = filterInputs contents
-  --let commands = map foldLine allLines
-  --contents <- filesContents
   tokes <- tokeFiles files
-  let commands = filter (not. null)  tokes
+  let commands = P.filter (not. P.null)  tokes
   return commands
 
 
-matchHeads str = filter (\x -> head x == str)
+matchHeads str = P.filter (\x -> head x == str)
 
 makeTypes maker match  inputs = map maker $ matchHeads match inputs
 
@@ -211,20 +154,13 @@ getYahoos = makeTypes mkYahoo "yahoo"
 
 
 
-mkReturn :: [String] -> Return
-mkReturn ["return", arg2, dstamp, arg4, arg5] =
-  Return { rtIdx = idx , rtDstamp = dstamp
-         , rtMine = (asDouble arg4), rtMinepc = 0
-         , rtAsx = (asDouble arg5), rtAsxpc = 0, rtOutpc = 0 }
-  where idx = (read arg2)::Int
-
 
 mkXacc :: [String] -> Xacc
 mkXacc ("xacc":target:sources) = Xacc target sources
 
 
 
--- FIXME HIGH use multisets and greatly simplify this
+-- FIXME HIGH separate out into core and non-core modules
 createRecs :: Records -> [[String]] -> Records
 createRecs recs [] = recs
 createRecs recs ([]:xs) = recs
@@ -243,15 +179,38 @@ createRecs recs (fields:xs) =
       "ntran" -> recs { rcNtrans = (rcNtrans recs ++ [mkNtran fields]) }
       "period" -> recs { rcPeriods = (rcPeriods recs ++ [mkPeriod fields]) }
       "port" -> recs {rcPorts = (rcPorts recs ++ [mkPort fields]) }
-      "return" -> recs { rcReturns = (rcReturns recs ++ [mkReturn fields]) }
+      --"return" -> recs { rcReturns = (rcReturns recs ++ [mkReturn fields]) }
       "xacc" -> recs { rcXaccs = (rcXaccs recs ++ [mkXacc fields]) }
       "yahoo" -> recs { rcQuotes = (rcQuotes recs ++ [mkYahoo fields]) }
       _ -> recs
 
 
+{-
+recsTable = [ ("comm", rcComms, mkComm),  ("dps", rcDpss, mkDps)
+            , ("eacc", rcNaccs, mkEacc),  ("etran", rcEtrans, mkEtran)
+            , ("etranx", rcEtrans, mkEtran)
+            , ("fin", rcFinancials, mkFinancial)
+            , ("nacc", rcNaccs, mkNacc), ("ntran", rcNtrans, mkNtran)
+            , ("period", rcPeriods, mkPeriod)
+            , ("port", rcPorts, mkPort), ("return", rcReturns, mkReturn)
+            , ("xacc", rcXaccs, mkXacc), ("yahoo", rcQuotes, mkYahoo)]
+-}
 
+--mkEmptyTable = map (\r -> fst recTable
 
+{-           
+newWay :: IO [(String, [[String]])]
+newWay = do
+  inputs <- readInputs
+  let grps = groupWith' head inputs
+  return $ map (\x -> (head $ head x, x)) grps
+-}
+
+--newWay1 :: IO [[[String]]]
+--newWay1 = readInputs >>= (\x -> groupWith' head x)
+
+radi :: IO ([[String]], Records)
 radi = do
   inputs <- readInputs
   let recs = createRecs records0 inputs
-  return recs
+  return (inputs, recs)

@@ -139,14 +139,7 @@ data Ntran = Ntran { ntDstamp::Dstamp, ntDr ::Acc, ntCr:: Acc, ntP:: Pennies
 data Port = Port { prTarget :: Folio, prSources :: [Folio] } deriving Show            
 
 
-data Return = Return { rtIdx::Int
-                     , rtDstamp::Dstamp
-                     , rtMine::Double
-                     , rtMinepc::Percent
-                     , rtAsx::Double
-                     , rtAsxpc::Percent
-                     , rtOutpc::Percent
-                     } deriving (Show)
+
 
 
 data StockQuote = StockQuote {
@@ -164,7 +157,7 @@ data StockQuote = StockQuote {
 data Xacc = Xacc { xcTarget :: Acc, xcSources :: [Acc] } deriving Show
 
 -- see Parser.hs for reading these items
-
+{-
 data Record = RecComm Comm
             | RecDps Dps
             | RecEtran Etran
@@ -177,7 +170,7 @@ data Record = RecComm Comm
             | RecReturn Return
             | RecXacc Xacc
             deriving (Show)
-
+-}
 
 {- -- this doesn't work, due to multiple #declarations'
 data Record = Comm | Dps | Etran | Financial | Nacc
@@ -196,11 +189,11 @@ data Records = Records {
   , rcPeriods :: [Period]
   , rcPorts :: [Port]
   , rcQuotes :: [StockQuote]
-  , rcReturns :: [Return]
+  --, rcReturns :: [Return]
   , rcXaccs :: [Xacc]
   } deriving Show
 
-records0 = Records  [] [] [] [] [] [] [] [] [] [] [] --  (take 10 $ repeat [])::Records
+records0 = Records  [] [] [] [] [] [] [] [] [] []  --  (take 10 $ repeat [])::Records
 --records0 = Records $ ((take 11 $ repeat [])::Records)
 
 
@@ -219,7 +212,8 @@ allSt (StockTrip f s w) = f ++ s ++ w
                  
 data Ledger = Ledger
     {
-      ldRecords :: Records
+      ldInputs :: [[String]]
+    , ldRecords :: Records
     , start :: Dstamp
     , end :: Dstamp
     , squotes :: StockTrip
@@ -232,7 +226,7 @@ financials = rcFinancials . ldRecords
 ntrans = rcNtrans . ldRecords
 naccs = rcNaccs . ldRecords
 ports = rcPorts . ldRecords
-returns = rcReturns . ldRecords
+--returns = rcReturns . ldRecords
 xaccs = rcXaccs . ldRecords
 
 ledgerQuotes ledger = allSt $ squotes ledger

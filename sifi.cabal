@@ -2,7 +2,7 @@
 -- see http://haskell.org/cabal/users-guide/
 
 name:                sifi
-version:             6.3.0.0
+version:             6.3.1.0
 synopsis:            Simple set of accounts using Haskell
 -- description:         
 homepage:            http://www.markcarter.me.uk
@@ -67,6 +67,7 @@ library
                      , Html
                      --, Ledger
                      , Lexer
+                     , ListUtils
                      , Nacc
                      , Paths_sifi
                      , Parser, Portfolio, Post

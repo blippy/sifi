@@ -11,7 +11,7 @@ import Etran
 import Financial
 import Nacc
 import Parser
-import Returns
+--import Returns
 import Types
 import Utils
 import Yahoo
@@ -47,11 +47,12 @@ trimLedger ledger =
 
 
 
-
-readLedger' :: Records -> Options -> Ledger
-readLedger' recs opts =
+-- FIXME Records scheduled for deprecation
+readLedger' :: ([[String]], Records) -> Options -> Ledger
+readLedger' (inps, recs) opts =
   Ledger {
-    ldRecords = recs
+    ldInputs = inps
+    , ldRecords = recs
     , start = start
     , end = end
     , squotes = quotes
@@ -79,8 +80,8 @@ freshQuotes ledger downloading =
 
 ratl' cmdOptions = do
   --print (optEnd cmdOptions) -- FIXME remove
-  recs <- radi
-  return $ readLedger' recs cmdOptions
+  (inputs, recs) <- radi
+  return $ readLedger' (inputs, recs) cmdOptions
 
 -- | Read and trim ledger
 ratl :: Options -> IO Ledger

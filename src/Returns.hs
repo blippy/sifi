@@ -4,10 +4,35 @@ import Text.Printf
 
 import Comm
 import Etran
+import ListUtils
 import Types
 import Utils
 
 
+data Return = Return { rtIdx::Int
+                     , rtDstamp::Dstamp
+                     , rtMine::Double
+                     , rtMinepc::Percent
+                     , rtAsx::Double
+                     , rtAsxpc::Percent
+                     , rtOutpc::Percent
+                     } deriving (Show)
+
+
+----------------------------------------------------------------------
+-- parsing
+
+mkReturn :: [String] -> Return
+mkReturn ["return", arg2, dstamp, arg4, arg5] =
+  Return { rtIdx = idx , rtDstamp = dstamp
+         , rtMine = (asDouble arg4), rtMinepc = 0
+         , rtAsx = (asDouble arg5), rtAsxpc = 0, rtOutpc = 0 }
+  where idx = (read arg2)::Int
+
+-- FIXME re-usable
+mkReturns ledger = map mkReturn $ filter (\r -> "return" == (head r)) $ ldInputs ledger
+
+----------------------------------------------------------------------
 
 fmtReturn :: Return -> String
 fmtReturn ret =
@@ -41,7 +66,7 @@ createReturns ledger =
   if length rets < 2  then [] else outLine
   where
     hdr = "IDX     DSTAMP   MINE  MINE%  ASX   ASX%   OUT%"
-    rets = returns ledger
+    rets = mkReturns ledger --returns ledger
     ret0 = head rets
     lastRet = last rets
     finIdx = 1 + (rtIdx lastRet)
@@ -62,10 +87,3 @@ createReturns ledger =
  
     summary = summaryLine $ deltaReturns finRet ret0
     outLine = [hdr] ++ cr2 ++ [summary]
-
-{-
-createReturns :: Ledger -> [String]
-createReturns ledger =
-  createReturns' ledger (returns ledger)
--}
-    
