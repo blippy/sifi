@@ -42,6 +42,10 @@ tokeFiles fnames = do
   a <- mapM tokeFile fnames
   return $ concat a
   
+getDouble fields field name = --FIXME this should be abstracted (e.g. also in Yahoo.hs)
+	case asEitherDouble field of
+		Left msg -> error $ unlines ["parseError", name, show fields, msg]
+		Right v -> v
 
 --tokeFiles fnames = (mapM tokeFile fnames) >>= concat
   
@@ -76,33 +80,32 @@ mkDps fields =
         Right v -> v
 
 
-mkEacc :: [String] -> Nacc
-mkEacc ["eacc", acc, alt, desc] = Nacc True acc alt desc
+--mkEacc :: [String] -> Nacc
+--mkEacc ["eacc", acc, alt, desc] = Nacc True acc alt desc
 
 
 
 mkEtran :: [[Char]] -> Etran
 mkEtran fields =
-    Etran dstamp True etIsBuy folio sym qtyD amountP undefined undefined
+    Etran dstamp isTaxable etIsBuy folio sym qtyD amountP undefined undefined
     where
-      [_, dstamp, way, folio, sym, qty, amount] = fields
-      getDouble field name = --FIXME this should be abstracted (e.g. also in Yahoo.hs)
-        case asEitherDouble field of
-          Left msg -> error $ unlines ["mkEtran parseError", name, show fields, msg]
-          Right v -> v
+      ["etran", etype, dstamp, way, folio, sym, qty, amount] = fields
+      gd = getDouble fields
+      isTaxable = (etype == "T")
       etIsBuy = way == "B"
       sgn1 = if etIsBuy then 1.0 else (-1.0) :: Double
-      qtyD = (getDouble qty "qty") * sgn1
-      amountP = enPennies (sgn1 * (getDouble amount "amount"))
+      qtyD = (gd qty "mkEtran:qty") * sgn1
+      amountP = enPennies (sgn1 * (gd amount "mkEtran:amount"))
 
 -- getEtrans = makeTypes mkEtran "etran"
 
+{-
 mkEtranx :: [String] ->Etran
 mkEtranx fields =
   et { etTaxable = False }
   where
     et = mkEtran fields
-
+-}
 
 
 
@@ -116,7 +119,12 @@ mkFinancial oops =
 
 -- | alt is the alternative account to use if the transaction is before the start date
 mkNacc :: [String] -> Nacc
-mkNacc ["nacc", acc, alt, desc] = Nacc False acc alt desc 
+mkNacc fields =
+	Nacc isEquity acc alt wayv desc 
+	where
+		["nacc", acc, alt, ntype, way, desc] = fields
+		wayv = getDouble fields way "mkNacc:way"
+		isEquity = (ntype == "E")
 
 
 
@@ -139,14 +147,17 @@ mkYahoo fields =
   StockQuote dstamp tstamp ticker rox' price' chg' chgpc'
   where
     ["yahoo", dstamp, tstamp, ticker, rox, price, chg, chgpc, "P"] = fields
+{-
     getDouble field name =
       case asEitherDouble field of
         Left msg -> error $ unlines ["mkQuote parse error:", name, show fields, msg]
         Right v -> v
-    rox' = getDouble rox "rox"
-    price' = getDouble price "price"
-    chg' = getDouble chg "chg"
-    chgpc' = getDouble chgpc "chgpc"
+-}
+    gd = getDouble fields
+    rox' = gd rox "mkQuote:rox"
+    price' = gd price "mkQuote:price"
+    chg' = gd chg "mkQuote:chg"
+    chgpc' = gd chgpc "mkQuote:chgpc"
     
 
 getYahoos = makeTypes mkYahoo "yahoo"
@@ -171,9 +182,9 @@ createRecs recs (fields:xs) =
     recs' = case cmd of 
       "comm" -> recs { rcComms = (rcComms recs ++ [mkComm fields]) }
       "dps"  -> recs { rcDpss  = (rcDpss  recs ++ [mkDps fields]) }
-      "eacc" -> recs {rcNaccs = (rcNaccs recs ++ [mkEacc fields]) }
+      --"eacc" -> recs {rcNaccs = (rcNaccs recs ++ [mkEacc fields]) }
       "etran" -> recs { rcEtrans = (rcEtrans recs ++ [mkEtran fields]) }
-      "etranx" -> recs { rcEtrans = (rcEtrans recs ++ [mkEtranx fields]) }
+      --"etranx" -> recs { rcEtrans = (rcEtrans recs ++ [mkEtranx fields]) }
       "fin" -> recs { rcFinancials = (rcFinancials recs ++ [mkFinancial fields]) }
       "nacc" -> recs { rcNaccs = (rcNaccs recs ++ [mkNacc fields]) }
       "ntran" -> recs { rcNtrans = (rcNtrans recs ++ [mkNtran fields]) }

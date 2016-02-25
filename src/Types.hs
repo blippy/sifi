@@ -130,7 +130,8 @@ data Financial =
             } deriving (Show)
 
 
-data Nacc = Nacc { ncEquity :: Bool, ncAcc::Acc, ncAlt::Acc, ncDesc::String} deriving Show
+data Nacc = Nacc { ncEquity :: Bool, ncAcc::Acc, ncAlt::Acc
+                 , ncWay :: Double , ncDesc::String} deriving Show
 
 data Ntran = Ntran { ntDstamp::Dstamp, ntDr ::Acc, ntCr:: Acc, ntP:: Pennies
                    , ntClear:: String, ntDesc:: String} deriving Show

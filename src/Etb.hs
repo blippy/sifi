@@ -62,7 +62,9 @@ printEtbAcc ns ps =
     dr = postDr $ p1
     msg = "printEtbAcc couldn't find nacc: '" ++ dr ++ "' in, e.g. " ++ (show p1)
     theNacc = doOrDie (find (\n -> dr == (ncAcc n)) ns) msg
-    Nacc _ acc _ desc = theNacc
+    --Nacc _ acc _ desc = theNacc
+    acc =  ncAcc theNacc
+    desc = ncDesc theNacc
     runningTotals = cumPennies $ L.map postPennies ps
     body = map2 etbLine ps runningTotals
     textLines = ["Acc: " ++ acc, desc] ++ body ++ [";"]
