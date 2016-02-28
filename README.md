@@ -1,6 +1,8 @@
 # sifi
 Text-base finance app
 
+The preferred installation method as at 28-Feb-2016 is to use stack
+
 ## Cabal
 
 As at 26-Sep-2015, I recommend using "stack" (qv) to build and compile on Arch Linux.
@@ -43,6 +45,15 @@ https://nikita-volkov.github.io/profiling-cabal-projects/
 http://stackoverflow.com/questions/32123475/profiling-builds-with-stack
 
 stack exec my-exec -- +RTS -p
+
+## WIN7/CYGWIN
+
+Ensure the following is in your PATH:
+
+
+	C:\Users\mcarter\AppData\Roaming\local\bin\
+
+
 
 ## Notes
 
