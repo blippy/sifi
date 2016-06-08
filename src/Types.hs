@@ -94,13 +94,10 @@ noPennies p = 0.0 == unPennies p
 
 
 
-data Comm = Comm { cmSym :: Sym
+data Comm = Comm { cmYepic :: Ticker
                  , cmFetch :: Bool
                  , cmType :: String
                  , cmUnit :: String -- currency as string, e.g. USD P GBP NIL
-                 --, cmExch :: String
-                 --, cmGepic :: String
-                 , cmYepic :: Ticker
                  , cmName :: String
                  , cmStartPrice :: Maybe Double
                  , cmEndPrice :: Maybe Double }
@@ -134,7 +131,7 @@ data Nacc = Nacc { ncEquity :: Bool, ncAcc::Acc, ncAlt::Acc
                  , ncWay :: Double , ncDesc::String} deriving Show
 
 data Ntran = Ntran { ntDstamp::Dstamp, ntDr ::Acc, ntCr:: Acc, ntP:: Pennies
-                   , ntClear:: String, ntDesc:: String} deriving Show
+                   , ntDesc:: String} deriving Show
 
 
 data Port = Port { prTarget :: Folio, prSources :: [Folio] } deriving Show            

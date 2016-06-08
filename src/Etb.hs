@@ -17,7 +17,6 @@ import Text.Printf
 --import Aggregate
 import Args
 import Comm
-import Dps
 import Epics
 import Etran
 import Financial
@@ -136,7 +135,6 @@ mkReports  ledger options =
     repTbl =
       [ Rep "accs"       PrinAccs    (reportAccs grp)
       , Rep "cgt"        PrinCgt     createCgtReport
-      , Rep "dpss"       PrinDpss    createDpssReport
       , Rep "epics"      PrinEpics   reportEpics
       , Rep "etb"        PrinEtb     (createEtbReport etb)
       , Rep "etrans"     PrinEtrans  createEtranReport

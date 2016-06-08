@@ -20,10 +20,10 @@ findComm comms sym =
     Just value -> value
     Nothing -> error ("ERR: findComm couldn't find Comm with Sym " ++ sym)
   where
-    hit = find (\c -> sym == (cmSym c)) comms
+    hit = find (\c -> sym == (cmYepic c)) comms
 
-findTicker :: [Comm] -> Sym -> Ticker
-findTicker comms sym = cmYepic $ findComm comms sym
+--findTicker :: [Comm] -> Sym -> Ticker
+--findTicker comms sym = cmYepic $ findComm comms sym
                
 
 

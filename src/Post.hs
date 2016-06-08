@@ -24,7 +24,7 @@ data Post = Post {
 postingsFromNtran ntran =
   [n1, n2]
   where
-    Ntran dstamp dr cr pennies _ desc =  ntran
+    Ntran dstamp dr cr pennies desc =  ntran
     n1 = Post dstamp dr cr pennies desc
     n2 = Post dstamp cr dr (negp pennies) desc
     
@@ -39,8 +39,8 @@ postingsFromEtran e =
     ds = etDstamp e
     s = etSym e
     pCost = Post ds folio "pCost" (negp $ etAmount e) ("pCost:" ++ s) -- actual cost
-    pPdp  = Post ds (folio ++ "/g") "pPdp" (negp $ etPdp e) ("pPdp:" ++ s) -- profit during period
-    pVcd  = Post ds (folio ++ "/c") "pVcd" ( etVcd e) ("pVcd:" ++ s) -- value c/d
+    pPdp  = Post ds (folio ++ "_g") "pPdp" (negp $ etPdp e) ("pPdp:" ++ s) -- profit during period
+    pVcd  = Post ds (folio ++ "_c") "pVcd" ( etVcd e) ("pVcd:" ++ s) -- value c/d
     posts1 = [pCost, pPdp, pVcd]
 
     pPbd2 = Post ds "opn" "pdb2" (negp $ etPbd e) ("pdb2:" ++ s) -- profit b/d
@@ -51,13 +51,6 @@ postingsFromEtran e =
 
 postingsFromEtrans etrans = concatMap postingsFromEtran etrans
 
-{-
-testPostings = do
-  ledger <- ratl False
-  let es = etrans ledger      
-  let ps = postingsFromEtrans es
-  printAll ps
--}
 
 createPostings :: [Ntran] -> [Etran] -> [Post]
 createPostings ntrans derivedEtrans =

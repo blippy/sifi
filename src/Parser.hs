@@ -63,8 +63,8 @@ makeTypes maker match  inputs = map maker $ matchHeads match inputs
 
 
 mkComm :: [[Char]] -> Comm
-mkComm ["comm", sym, fetch, ctype, unit, yepic, name] = 
-    Comm sym bfetch ctype unit yepic name undefined undefined
+mkComm ["comm", yepic, fetch, ctype, unit, name] = 
+    Comm yepic bfetch ctype unit name undefined undefined
     where bfetch = (fetch == "W")
 
 
@@ -129,8 +129,8 @@ mkNacc fields =
 
 
 mkNtran :: [String] -> Ntran
-mkNtran ["ntran", dstamp, dr, cr, pennies, clear, desc] =
-  Ntran dstamp dr cr (asPennies pennies) clear desc
+mkNtran ["ntran", dstamp, dr, cr, pennies, desc] =
+  Ntran dstamp dr cr (asPennies pennies) desc
 
 
 mkPeriod :: [String] -> Period

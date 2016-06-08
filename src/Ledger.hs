@@ -6,7 +6,6 @@ import Safe (lastDef)
 
 import Args
 import Comm
-import Dps
 import Etran
 import Financial
 import Nacc
@@ -31,12 +30,12 @@ trimLedger ledger =
       then trNtrans acc ns
       else trNtrans (n':acc) ns
       where
-        Ntran dstamp dr cr pennies clear desc = n
+        Ntran dstamp dr cr pennies desc = n
         theNaccs = naccs ledger
         (dr', cr') = if dstamp < (start ledger)
                      then (alt dr theNaccs, alt cr theNaccs)
                      else (dr, cr)
-        n' = Ntran dstamp dr' cr' pennies clear desc
+        n' = Ntran dstamp dr' cr' pennies desc
     ntrans' = trNtrans [] $ ntrans ledger
 
     comms' = deriveComms (start ledger) (end ledger) (ledgerQuotes ledger) (comms ledger)
@@ -103,7 +102,7 @@ etranToSQuote comms e =
   StockQuote ds "08:00:00" ticker 1.0 price 0.0 0.0
   where
     ds = etDstamp e
-    ticker = findTicker comms (etSym e)
+    ticker = etSym e
     amount = unPennies $ etAmount e
     qty = etQty e
     price = 100.0 * amount / qty

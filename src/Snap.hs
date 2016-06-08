@@ -23,7 +23,7 @@ totalQty ::  [Etran] -> Comm -> Qty
 totalQty etrans comm =
   qtys commEtrans
   where
-    hit e = (cmSym comm) == (etSym e)
+    hit e = (cmYepic comm) == (etSym e)
     commEtrans = filter hit  etrans
 
 
@@ -39,21 +39,6 @@ mkSnapLine (sq, qty) =
     str = printf snapFmt ticker amount chg1 chgpc    
 
 
-{-
--- | False => use cached version, True => download values afresh
-snapDownloading :: [Comm] -> Bool -> Bool -> IO [StockQuote]
-snapDownloading theComms concurrently afresh = do
-  pres <- fmap partitionEithers $ precacheCommsUsing concurrently theComms
-  loaded <- loadPrecachedComms
-  let (errs, fetchedQuotes) = if afresh
-                              then  pres
-                              else ([], loaded)
-  -- FIXME do something with errs
-  --createSnapReport theComms theEtrans fetchedQuotes
-  return fetchedQuotes
-  
-  --let fetchableComms = filter fetchRequired theComms
--}
 
 createSnapReport :: Ledger -> [String]
 createSnapReport ledger =
@@ -68,7 +53,7 @@ createSnapReport ledger =
         where
           qty = qtys etrans
           sym = etSym $ head etrans
-          comm = find (\c -> cmSym c == sym) theComms
+          comm = find (\c -> cmYepic c == sym) theComms
           ctype = fmap cmType  comm
           ticker = fmap cmYepic comm
           msq = find (\s -> Just (sqTicker s) == ticker) fetchedQuotes

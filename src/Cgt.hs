@@ -31,7 +31,7 @@ createCgtReport ledger =
     esTax = filter etTaxable $  etrans ledger
 
     -- find the comms which have sales during the period
-    commSym = cmSym . etComm -- the symbol of a commodity
+    commSym = cmYepic . etComm -- the symbol of a commodity
     cs = nub $ sort $ map commSym  $ filter (\e -> (etDuring e) && (etIsSell e)) esTax
 
     -- find those etrans which have comms that have sales

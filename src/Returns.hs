@@ -78,7 +78,7 @@ createReturns ledger =
           in (cp etPdp) / (cp etVbd) + 1.0
 
     finMine = (rtMine lastRet) * rat
-    asxNow = commEndPriceOrDie (comms ledger) "FTAS" -- FIXME generalise
+    asxNow = commEndPriceOrDie (comms ledger) "^FTAS" -- FIXME generalise
     finRet = Return finIdx (end ledger) finMine 0 asxNow 0 0
 
     augReturns = rets ++ [finRet] 
