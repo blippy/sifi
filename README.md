@@ -1,11 +1,13 @@
 # sifi
 Text-base finance app
 
-The preferred installation method as at 28-Feb-2016 is to use stack
+## Preferred method of installation
+
+* 18-Jun-2016 cabal
+* 28-Feb-2016 stack
 
 ## Cabal
 
-As at 26-Sep-2015, I recommend using "stack" (qv) to build and compile on Arch Linux.
 
 Once you have downloaded the sources, you can build the project:
 
@@ -17,7 +19,7 @@ To play around with the project as a developer:
 
     cabal repl
     :l Etb
-    createEtb
+    ceb
     
 
 
